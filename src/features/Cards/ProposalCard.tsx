@@ -1,5 +1,5 @@
 import { useChatStore } from '../../store/store';
-import { ArrowRight, BadgePercent, Calendar, DollarSign } from 'lucide-react';
+
 import { RotateCw } from 'lucide-react';
 
 export default function ProposalCard() {

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Layout from './components/Layout';
 import PreSimulation from './features/PreSimulation';
 import ChatInterface from './features/Chat/ChatInterface';
