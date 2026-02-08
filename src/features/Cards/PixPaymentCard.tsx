@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Copy, Check, QrCode } from 'lucide-react';
 import { advanceFlow } from '../../services/chatService';
 import { useChatStore } from '../../store/store';

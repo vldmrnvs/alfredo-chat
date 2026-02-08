@@ -1,4 +1,3 @@
-import React from 'react';
 import { useChatStore } from '../../store/store';
 
 export default function StrategiesCard() {
@@ -11,7 +10,7 @@ export default function StrategiesCard() {
         { id: 'rapida', icon: '🚀', title: 'Aceleração', desc: 'Grupo em andamento.' }
     ];
 
-    const handleSelect = (routeId: string) => {
+    const handleSelect = () => {
         // In a real scenario, we might want to pre-select the route in the modal
         // For now, just opening the modal is enough as the modal defaults to the first one or handles logic
         setModalOpen(true);
@@ -22,7 +21,7 @@ export default function StrategiesCard() {
             {routes.map((route) => (
                 <button
                     key={route.id}
-                    onClick={() => handleSelect(route.id)}
+                    onClick={() => handleSelect()}
                     className="flex-shrink-0 w-40 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all text-left group snap-center"
                 >
                     <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">{route.icon}</div>

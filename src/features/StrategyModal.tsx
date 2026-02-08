@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, SlidersHorizontal, Check, Info } from 'lucide-react';
 import { useChatStore } from '../store/store';
 import { advanceFlow } from '../services/chatService';

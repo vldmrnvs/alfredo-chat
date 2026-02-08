@@ -1,25 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Camera, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { advanceFlow } from '../../services/chatService';
 import { useChatStore } from '../../store/store';
 
 export default function DocumentCheckinCard() {
-    const { userData } = useChatStore();
-    const [docType, setDocType] = useState<'rg' | 'cnh' | null>(null);
+    // const { userData } = useChatStore(); // Unused
     const [uploadStep, setUploadStep] = useState<'type' | 'front' | 'back' | 'validating'>('type');
     const [step, setStep] = useState<'upload' | 'validating' | 'form'>('upload');
 
-    // Images
-    const [frontImg, setFrontImg] = useState<string | null>(null);
-    const [backImg, setBackImg] = useState<string | null>(null);
+    // Images held only for preview logic, no need to store permanent state if not used
     const [previewImg, setPreviewImg] = useState<string | null>(null);
 
     const handleConfirm = () => {
         advanceFlow('docs_uploaded');
     };
 
-    const handleTypeSelect = (type: 'rg' | 'cnh') => {
-        setDocType(type);
+    const handleTypeSelect = (_type: 'rg' | 'cnh') => {
+        // setDocType(type); // Unused
         setUploadStep('front');
     };
 
@@ -37,21 +34,21 @@ export default function DocumentCheckinCard() {
         const { addMessage } = useChatStore.getState();
 
         if (uploadStep === 'front') {
-            setFrontImg(previewImg);
+            // setFrontImg(previewImg); // Unused
             // Immediate feedback in chat
             addMessage({ type: 'image', content: previewImg, sender: 'user' });
 
             setPreviewImg(null);
             setUploadStep('back');
         } else if (uploadStep === 'back') {
-            setBackImg(previewImg);
+            // setBackImg(previewImg); // Unused
             // Immediate feedback in chat
             addMessage({ type: 'image', content: previewImg, sender: 'user' });
 
             setPreviewImg(null);
             setUploadStep('validating');
             setTimeout(() => {
-                setStep('form'); // We will use this 'form' state to trigger "Done" ui, but we are NOT rendering the form here
+                setStep('form'); // We will use this 'form' state to trigger "Done" ui
                 handleConfirm(); // Advance immediately after validation visual
             }, 2000);
         }

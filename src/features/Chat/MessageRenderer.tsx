@@ -1,4 +1,3 @@
-import React from 'react';
 import { clsx } from 'clsx';
 import type { ChatMessage } from '../../store/store';
 import ProposalCard from '../Cards/ProposalCard';

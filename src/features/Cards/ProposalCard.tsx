@@ -1,6 +1,6 @@
-import React from 'react';
 import { useChatStore } from '../../store/store';
-import { RotateCw, Check } from 'lucide-react';
+import { ArrowRight, BadgePercent, Calendar, DollarSign } from 'lucide-react';
+import { RotateCw } from 'lucide-react';
 
 export default function ProposalCard() {
     const { userData, setModalOpen } = useChatStore();
