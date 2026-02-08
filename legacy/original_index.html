@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alfredo | Consórcio Inteligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Importando Geist Sans desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <style>
+        /* --- BRANDING & LIQUID GLASS SYSTEM --- */
+        :root {
+            --font-body: 'Geist Sans', sans-serif;
+            --font-display: 'Outfit', sans-serif;
+            --color-mint: #94F6AD;
+            --color-mint-hover: #7EF39A;
+            --color-mint-light: #E3FFEE;
+            --color-lime: #CEFA83;
+            --color-danger: #EF4444;
+            --text-main: #132116;
+            --text-sec: #2D4A3A;
+            --text-ter: #404040;
+            --bg-app: #f2f2f7;
+            --bg-card: #FFFFFF;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #e5e5e5;
+            background-image: radial-gradient(at 0% 0%, hsla(136, 80%, 90%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(84, 90%, 90%, 1) 0, transparent 50%);
+            color: var(--text-main);
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-display {
+            font-family: var(--font-display);
+            color: var(--text-main);
+        }
+
+        /* Glass Components */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .glass-input-area {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: var(--glass-border);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .bubble-alfredo {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            color: var(--text-sec);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .bubble-user {
+            background: rgba(148, 246, 173, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-main);
+            box-shadow: 0 2px 10px rgba(148, 246, 173, 0.2);
+        }
+
+        /* Buttons & Inputs */
+        .btn-mint {
+            background-color: var(--color-mint);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .btn-mint:hover {
+            background-color: var(--color-mint-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(148, 246, 173, 0.4);
+        }
+
+        .btn-mint:active {
+            transform: translateY(0);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .asset-btn {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(250, 250, 250, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .asset-btn:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--color-mint);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(148, 246, 173, 0.3);
+        }
+
+        .asset-btn.selected {
+            background: rgba(227, 255, 238, 0.9);
+            border-color: var(--color-mint);
+            color: var(--text-main);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(148, 246, 173, 0.5), inset 0 0 0 1px var(--color-mint);
+        }
+
+        .input-mint-glass {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .input-mint-glass:focus {
+            background: #FFFFFF;
+            border-color: var(--color-mint);
+            box-shadow: 0 0 0 3px rgba(148, 246, 173, 0.3);
+            outline: none;
+        }
+
+        .input-mint-glass::placeholder {
+            color: #A0A0A0;
+            font-weight: 400;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--color-mint);
+            border: 2px solid white;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #E5E5E5;
+            border-radius: 999px;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex items-center justify-center p-0 md:p-6">
+
+    <!-- APP CONTAINER -->
+    <div
+        class="glass-container w-full h-full md:h-[850px] md:w-[460px] md:rounded-[2.5rem] flex flex-col relative overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="glass-header z-20 px-6 py-4 flex items-center justify-between sticky top-0">
+            <div class="flex items-center gap-3">
+                <!-- Removed 'antigravity-float' class -->
+                <div
+                    class="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-emerald-100 to-white shadow-md relative group">
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alfredo&backgroundColor=b6e3f4"
+                        alt="Alfredo" class="w-full h-full rounded-full object-cover">
+                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full">
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg leading-none tracking-tight"
+                        style="color: var(--text-main)">Alfredo</h1>
+                    <span class="text-[10px] uppercase tracking-wider font-bold opacity-60"
+                        style="color: var(--text-sec)">Consultor IA</span>
+                </div>
+            </div>
+            <button onclick="location.reload()"
+                class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-black/5 transition text-gray-500 hover:text-gray-800">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 1: PRE-SIMULATOR -->
+        <div id="pre-sim-screen" class="flex-1 overflow-y-auto p-8 flex flex-col z-10 fade-in"
+            style="background: var(--bg-card);">
+            <div class="mt-4 mb-8">
+                <span class="text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block"
+                    style="background-color: var(--color-mint-light); color: var(--text-sec);">Consultoria
+                    Digital</span>
+                <h2 class="font-display text-4xl font-bold leading-tight mb-3" style="color: var(--text-main);">Qual o
+                    seu<br>próximo passo?</h2>
+                <p class="leading-relaxed opacity-70" style="color: var(--text-ter);">A inteligência artificial vai
+                    desenhar o melhor plano para você conquistar seu bem.</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-8">
+                <button onclick="selectAsset('imovel')" id="btn-imovel"
+                    class="asset-btn p-4 rounded-[2rem] flex flex-col items-center gap-3 group">
+                    <div class="text-3xl group-hover:scale-110 transition-transform">🏡</div>
+                    <span class="text-xs font-bold opacity-80 group-hover:opacity-100">Imóvel</span>
+                </button>
+                <button onclick="selectAsset('auto')" id="btn-auto"
+                    class="asset-btn p-4 rounded-[2rem] flex flex-col items-center gap-3 group">
+                    <div class="text-3xl group-hover:scale-110 transition-transform">🚗</div>
+                    <span class="text-xs font-bold opacity-80 group-hover:opacity-100">Auto</span>
+                </button>
+                <button onclick="selectAsset('moto')" id="btn-moto"
+                    class="asset-btn p-4 rounded-[2rem] flex flex-col items-center gap-3 group">
+                    <div class="text-3xl group-hover:scale-110 transition-transform">🏍️</div>
+                    <span class="text-xs font-bold opacity-80 group-hover:opacity-100">Moto</span>
+                </button>
+            </div>
+
+            <div class="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border mb-6 relative overflow-hidden group transition-colors"
+                style="background: #FAFAFA; border-color: #E5E5E5;" id="value-input-container">
+                <div class="absolute top-0 left-0 w-1.5 h-full transition-colors"
+                    style="background-color: var(--color-mint);"></div>
+                <div class="flex justify-between items-center mb-4">
+                    <label class="font-bold text-sm tracking-tight opacity-80" id="input-label"
+                        style="color: var(--text-main);">Valor do Crédito</label>
+                    <button onclick="toggleInputMode()"
+                        class="text-xs font-bold hover:opacity-70 transition flex items-center gap-1"
+                        id="toggle-mode-btn" style="color: var(--text-sec);">
+                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Alternar
+                    </button>
+                </div>
+                <div class="relative flex items-baseline gap-1">
+                    <span class="font-medium text-lg opacity-40">R$</span>
+                    <input type="text" inputmode="numeric" id="pre-input-value" oninput="maskCurrency(event)"
+                        class="w-full bg-transparent border-none p-0 font-display font-bold text-3xl placeholder-gray-300 focus:ring-0 outline-none"
+                        placeholder="0,00" style="color: var(--text-main);">
+                </div>
+            </div>
+
+            <div class="mb-auto">
+                <label class="flex items-start gap-3 p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer group">
+                    <div class="relative flex items-center mt-0.5">
+                        <input type="checkbox" id="dont-know-check" class="peer sr-only"
+                            onchange="handleDontKnow(this)">
+                        <div
+                            class="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-black peer-checked:border-black transition">
+                        </div>
+                        <i
+                            class="fa-solid fa-check text-white text-xs absolute top-1 left-1 opacity-0 peer-checked:opacity-100 transition"></i>
+                    </div>
+                    <span class="text-sm font-medium leading-tight opacity-60 group-hover:opacity-100 transition"
+                        style="color: var(--text-ter);">Não sei o valor do bem, quero simular pelo <span
+                            class="font-bold text-black">valor da parcela</span>.</span>
+                </label>
+            </div>
+
+            <button onclick="startChat()" id="start-btn"
+                class="w-full btn-mint font-display font-bold text-lg py-5 rounded-full shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-6">
+                <span>Iniciar Simulação</span>
+                <i class="fa-solid fa-arrow-right-long"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 2: CHAT INTERFACE -->
+        <div id="chat-container" class="flex-1 flex flex-col relative hidden h-full"
+            style="background-color: var(--bg-app);">
+            <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide pb-32"></div>
+
+            <div class="absolute bottom-0 w-full glass-input-area rounded-t-[2rem] p-4 md:p-6 z-20">
+                <form id="chat-form" class="flex gap-3 items-end" onsubmit="handleUserSubmit(event)">
+                    <div class="flex-1 relative">
+                        <input type="text" id="user-input"
+                            class="w-full border-0 rounded-2xl px-6 py-4 transition font-medium shadow-inner focus:ring-2 focus:bg-white"
+                            style="background: rgba(255,255,255,0.6); color: var(--text-main); --tw-ring-color: var(--color-mint);"
+                            placeholder="Digite sua resposta..." autocomplete="off">
+                    </div>
+                    <button type="submit" id="submit-btn"
+                        class="w-14 h-14 rounded-full transition shadow-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 btn-mint">
+                        <i class="fa-solid fa-paper-plane text-lg"></i>
+                    </button>
+                </form>
+                <div id="quick-replies"
+                    class="flex gap-2 overflow-x-auto py-4 px-6 scrollbar-hide absolute -top-20 left-0 w-full mask-linear">
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: STRATEGY DETAILS -->
+        <div id="detail-modal" class="absolute inset-0 z-50 hidden flex items-end justify-center p-0 md:p-4"
+            style="background: rgba(19, 33, 22, 0.4); backdrop-filter: blur(4px);">
+            <div
+                class="bg-white w-full h-[95vh] md:h-auto md:max-h-[96%] rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl flex flex-col modal-enter overflow-hidden relative">
+
+                <!-- Modal Header -->
+                <div
+                    class="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+                    <div>
+                        <h2 id="modal-title" class="font-display text-2xl font-bold" style="color: var(--text-main);">
+                            Estratégia</h2>
+                        <p id="modal-subtitle" class="text-xs font-bold uppercase tracking-widest mt-1 opacity-50">
+                            Configuração Avançada</p>
+                    </div>
+                    <button onclick="closeModal()"
+                        class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-black flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Scroll Content -->
+                <div class="flex-1 overflow-y-auto p-8 space-y-8 bg-white">
+                    <div id="modal-ai-insight" class="hidden relative overflow-hidden rounded-2xl p-5 border"
+                        style="background-color: var(--color-mint-light); border-color: var(--color-mint);">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1"
+                                style="background-color: rgba(255,255,255,0.6);">✨</div>
+                            <div>
+                                <p class="text-xs font-bold uppercase mb-1" style="color: var(--text-sec);">Análise
+                                    Alfredo IA</p>
+                                <p id="modal-ai-text" class="text-sm leading-relaxed" style="color: var(--text-main);">
+                                    Carregando análise...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-xs font-bold opacity-40 uppercase tracking-widest mb-2">Sua Parcela Estimada</p>
+                        <div class="flex items-baseline justify-center gap-1">
+                            <span class="text-5xl font-display font-bold tracking-tight" id="modal-installment"
+                                style="color: var(--text-main);">R$ 0</span>
+                            <span class="font-medium opacity-40">/mês</span>
+                        </div>
+                        <div id="modal-badge-container" class="mt-3 flex justify-center"></div>
+                    </div>
+
+                    <div class="rounded-3xl p-6 border border-gray-100" style="background-color: #FAFAFA;">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold flex items-center gap-2" style="color: var(--text-main);"><i
+                                    class="fa-solid fa-sliders opacity-40"></i> Mixer de Lance</h3>
+                            <div class="flex flex-col items-end">
+                                <span class="text-[10px] font-bold opacity-40 uppercase mb-1">Probabilidade</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="h-2 w-20 bg-gray-200 rounded-full overflow-hidden">
+                                        <div id="chance-bar" class="h-full w-0 transition-all duration-500"
+                                            style="background-color: var(--color-mint);"></div>
+                                    </div>
+                                    <span id="chance-text" class="text-xs font-bold opacity-60">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-3">
+                                <label class="font-bold opacity-70">💰 Lance do Bolso</label>
+                                <span id="livre-display" class="font-bold px-2 py-0.5 rounded-md"
+                                    style="background-color: var(--color-mint-light); color: var(--text-sec);">R$
+                                    0</span>
+                            </div>
+                            <input type="range" id="livre-slider" class="w-full" min="0" max="100" step="1"
+                                oninput="updateMixer()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm mb-3">
+                                <label class="font-bold opacity-70">🧩 Lance Embutido</label>
+                                <span id="embutido-display" class="font-bold px-2 py-0.5 rounded-md"
+                                    style="background-color: var(--color-lime); color: var(--text-sec);">0%</span>
+                            </div>
+                            <input type="range" id="embutido-slider" class="w-full" min="0" max="30" step="5"
+                                oninput="updateMixer()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
+                            <p class="text-[10px] font-bold opacity-40 uppercase mb-1">Crédito Líquido</p>
+                            <p class="font-display font-bold text-lg" id="modal-credit"
+                                style="color: var(--text-main);">R$ 0</p>
+                            <p class="text-[10px] opacity-40 mt-1" id="modal-credit-gross">Bruto: R$ 0</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
+                            <p class="text-[10px] font-bold opacity-40 uppercase mb-1">Lance Total</p>
+                            <p class="font-display font-bold text-lg" id="modal-total-lance"
+                                style="color: var(--text-sec);">0%</p>
+                            <p class="text-[10px] opacity-40 mt-1" id="modal-total-lance-val">R$ 0</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
+                            <p class="text-[10px] font-bold opacity-40 uppercase mb-1">Prazo</p>
+                            <p class="font-display font-bold text-lg" id="modal-term-display"
+                                style="color: var(--text-main);">0x</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
+                            <p class="text-[10px] font-bold opacity-40 uppercase mb-1">Custo Total</p>
+                            <p class="font-display font-bold text-lg" id="modal-total" style="color: var(--text-main);">
+                                R$ 0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Action -->
+                <div class="p-6 bg-white border-t border-gray-50 shrink-0">
+                    <button onclick="confirmRoute()"
+                        class="w-full btn-mint font-display font-bold py-4 rounded-full shadow-xl hover:scale-[1.01] transition active:scale-95 flex items-center justify-center gap-3">
+                        Confirmar Estratégia <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button onclick="closeModal()"
+                        class="w-full text-center text-xs font-bold text-gray-400 uppercase tracking-widest mt-4 hover:text-gray-600 transition">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN LOGIC -->
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // CONFIG
+        const apiKey = "";
+        let genAI;
+        try { if (apiKey) genAI = new GoogleGenerativeAI(apiKey); } catch (e) { console.error("AI Error", e); }
+
+        // --- AI FUNCTIONS ---
+        async function getGeminiAnalysis(profile) {
+            if (!genAI) return null;
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-09-2025" });
+            const prompt = `Aja como Alfredo, consultor financeiro de elite. Analise: Objetivo ${profile.goal}, Urgência ${profile.urgency}, Lance ${profile.lanceType} (R$ ${profile.lanceValue}). Escreva um veredito de 1 parágrafo curto (25 palavras) em português, tom profissional e encorajador. Use 1 emoji.`;
+            try { const res = await model.generateContent(prompt); return res.response.text(); } catch (e) { return null; }
+        }
+
+        async function getGeminiCardInsight(cardName, profile) {
+            if (!genAI) return null;
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-09-2025" });
+            const prompt = `Explique em 1 frase por que a estratégia de consórcio "${cardName}" é boa para alguém com urgência ${profile.urgency}.`;
+            try { const res = await model.generateContent(prompt); return res.response.text(); } catch (e) { return null; }
+        }
+
+        window.getGeminiAnalysis = getGeminiAnalysis;
+        window.getGeminiCardInsight = getGeminiCardInsight;
+
+        // --- UTILS ---
+        window.maskCurrency = (event) => {
+            let value = event.target.value.replace(/\D/g, '');
+            if (value === '') { event.target.value = ''; return; }
+            value = (parseInt(value) / 100).toFixed(2) + '';
+            value = value.replace('.', ',');
+            value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            event.target.value = value;
+        };
+
+        window.maskPhone = (event) => {
+            let v = event.target.value.replace(/\D/g, "");
+            v = v.substring(0, 11);
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            event.target.value = v;
+        };
+
+        window.maskCPF = (event) => {
+            let v = event.target.value.replace(/\D/g, "");
+            v = v.substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            event.target.value = v;
+        };
+
+        function parseBRL(str) {
+            if (!str) return 0;
+            if (typeof str === 'number') return str;
+            const cleanStr = str.replace(/\./g, '').replace(',', '.');
+            return parseFloat(cleanStr) || 0;
+        }
+
+        function isValidCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf == '') return false;
+            if (cpf.length != 11 || /^(\d)\1+$/.test(cpf)) return false;
+            let add = 0;
+            for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            let rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) return false;
+            add = 0;
+            for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) return false;
+            return true;
+        }
+
+        function isValidPhone(phone) {
+            phone = phone.replace(/\D/g, '');
+            return phone.length >= 10 && phone.length <= 11;
+        }
+
+        const state = {
+            preSim: { selectedAsset: '', inputType: 'credit', value: 0, isBudgetBased: false },
+            chat: {
+                stepIndex: 0,
+                customHandler: null,
+                data: { goal: '', usage: '', urgency: '', name: '', whatsapp: '', cpf: '', has_lance: false, lance_value: 0, asset_type: '', finalRoute: {}, tags: [] }
+            },
+            simDetail: {}
+        };
+        const UI = { preScreen: document.getElementById('pre-sim-screen'), chatContainer: document.getElementById('chat-container'), chatBox: document.getElementById('chat-box'), input: document.getElementById('user-input'), quickReplies: document.getElementById('quick-replies'), modal: document.getElementById('detail-modal') };
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => { UI.chatBox.scrollTo({ top: UI.chatBox.scrollHeight, behavior: 'smooth' }); }, 100);
+        }
+
+        function addMessage(text, sender, isHtml = false, isAi = false) {
+            const div = document.createElement('div');
+            div.className = `flex w-full ${sender === 'bot' ? 'justify-start' : 'justify-end'} message-enter`;
+
+            let bubbleClass = `max-w-[85%] rounded-2xl p-4 text-[15px] leading-relaxed relative `;
+            if (isAi) {
+                bubbleClass += `bubble-alfredo border-l-4 font-medium `;
+                div.style.setProperty('--tw-border-opacity', '1');
+                div.style.borderColor = 'var(--color-mint)';
+            }
+            else if (sender === 'bot') bubbleClass += `bubble-alfredo rounded-tl-none `;
+            else bubbleClass += `bubble-user rounded-tr-none font-medium text-right `;
+
+            const bubble = document.createElement('div');
+            bubble.className = bubbleClass;
+            if (isHtml) bubble.innerHTML = text; else bubble.textContent = text;
+            div.appendChild(bubble);
+            UI.chatBox.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        async function botTalk(text, delay = 600, isAi = false) {
+            const id = 't-' + Date.now() + Math.random();
+            UI.chatBox.innerHTML += `<div id="${id}" class="flex w-full justify-start message-enter"><div class="bubble-alfredo rounded-2xl rounded-tl-none p-4 flex gap-1 h-12 w-16 items-center justify-center"><div class="typing-dot w-1.5 h-1.5 rounded-full" style="background:var(--text-sec)"></div><div class="typing-dot w-1.5 h-1.5 rounded-full" style="background:var(--text-sec)"></div><div class="typing-dot w-1.5 h-1.5 rounded-full" style="background:var(--text-sec)"></div></div></div>`;
+            scrollToBottom();
+            await new Promise(r => setTimeout(r, delay));
+            const el = document.getElementById(id);
+            if (el) el.remove();
+            return addMessage(text, 'bot', true, isAi);
+        }
+
+        function setInputMode(mode, ph = '') {
+            UI.input.value = ''; UI.input.placeholder = ph;
+            UI.input.oninput = null;
+            const btn = document.getElementById('submit-btn');
+
+            if (mode === 'hidden') {
+                UI.input.disabled = true; UI.input.style.opacity = '0.5'; btn.disabled = true; btn.style.opacity = '0.5';
+            } else {
+                UI.input.disabled = false; UI.input.style.opacity = '1'; btn.disabled = false; btn.style.opacity = '1';
+                UI.input.type = (mode === 'currency' || mode === 'phone' || mode === 'cpf') ? 'tel' : mode;
+                if (mode === 'currency') UI.input.oninput = window.maskCurrency;
+                if (mode === 'phone') UI.input.oninput = window.maskPhone;
+                if (mode === 'cpf') UI.input.oninput = window.maskCPF;
+                setTimeout(() => UI.input.focus(), 100);
+            }
+        }
+
+        function showOptions(opts) {
+            UI.quickReplies.innerHTML = ''; setInputMode('hidden');
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = `whitespace-nowrap px-6 py-3 rounded-full text-sm font-bold shadow-sm border transition-all mb-1 hover:shadow-md`;
+                btn.style.backgroundColor = 'white';
+                btn.style.color = 'var(--text-sec)';
+                btn.style.borderColor = 'var(--color-mint)';
+                btn.onmouseenter = function () { this.style.backgroundColor = 'var(--color-mint)'; this.style.color = 'var(--text-main)'; }
+                btn.onmouseleave = function () { this.style.backgroundColor = 'white'; this.style.color = 'var(--text-sec)'; }
+                btn.textContent = opt.label;
+                btn.onclick = () => handleInput(opt.value, opt.label);
+                UI.quickReplies.appendChild(btn);
+            });
+        }
+
+        // --- FLOW LOGIC ---
+        window.selectAsset = (type) => {
+            state.preSim.selectedAsset = type;
+            document.querySelectorAll('.asset-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById(`btn-${type}`).classList.add('selected');
+            state.chat.data.goal = type;
+        }
+        window.toggleInputMode = () => {
+            const isCredit = state.preSim.inputType === 'credit';
+            state.preSim.inputType = isCredit ? 'installment' : 'credit';
+            document.getElementById('input-label').textContent = isCredit ? 'Parcela Mensal Ideal' : 'Valor do Crédito';
+            document.getElementById('pre-input-value').placeholder = isCredit ? '1.500,00' : '200.000,00';
+        }
+        window.handleDontKnow = (cb) => {
+            state.preSim.isBudgetBased = cb.checked;
+            if (cb.checked) {
+                state.preSim.inputType = 'installment';
+                document.getElementById('input-label').textContent = 'Quanto sobra por mês?';
+                document.getElementById('pre-input-value').placeholder = '1.000,00';
+            } else {
+                state.preSim.inputType = 'credit';
+                document.getElementById('input-label').textContent = 'Valor do Crédito';
+                document.getElementById('pre-input-value').placeholder = '200.000,00';
+            }
+        }
+        window.startChat = () => {
+            const val = parseBRL(document.getElementById('pre-input-value').value);
+            if (!state.preSim.selectedAsset) return alert('Selecione o tipo de bem.');
+            if (!val || val <= 0) return alert('Digite um valor válido.');
+            state.preSim.value = val;
+            UI.preScreen.classList.add('fade-out');
+            setTimeout(() => {
+                UI.preScreen.classList.add('hidden');
+                UI.chatContainer.classList.remove('hidden');
+                UI.chatContainer.classList.add('fade-in');
+                initChatFlow();
+            }, 300);
+        }
+
+        const steps = [
+            { // 0
+                ask: async () => {
+                    const p = state.preSim;
+                    if (p.isBudgetBased) await botTalk(`Entendi. Com orçamento de <b>${formatCurrency(p.value)}</b>, vou focar em <b>Longevidade</b> para maximizar seu crédito.`);
+                    else await botTalk(`Recebi sua solicitação de <b>${formatCurrency(p.value)}</b> para <b>${p.selectedAsset}</b>.`);
+                    await botTalk("O valor está correto? Vou fazer algumas perguntas rápidas para calibrar sua estratégia.");
+                    showOptions([{ label: "✅ Sim, Bora lá", value: "sim" }, { label: "✏️ Corrigir Valor", value: "corrigir" }]);
+                },
+                process: async (v) => {
+                    if (v === 'corrigir') {
+                        await botTalk("Sem problemas. Qual é o valor correto?");
+                        setInputMode('currency', 'R$ 0,00');
+                        state.chat.customHandler = async (newVal) => {
+                            const parsed = parseBRL(newVal);
+                            if (parsed <= 0) { await botTalk("Valor inválido."); return; }
+                            state.preSim.value = parsed;
+                            await botTalk(`Feito! Valor atualizado para <b>${formatCurrency(parsed)}</b>.`);
+                            state.chat.customHandler = null;
+                            await botTalk("Podemos seguir agora?");
+                            showOptions([{ label: "✅ Sim, Bora lá", value: "sim" }, { label: "✏️ Corrigir Valor", value: "corrigir" }]);
+                        };
+                        return { action: 'wait' };
+                    }
+                    return { action: 'next' };
+                }
+            },
+            { // 1
+                ask: async () => {
+                    if (state.chat.data.goal === 'imovel') {
+                        await botTalk("Qual o objetivo principal?");
+                        showOptions([{ label: "🏠 Morar", value: "morar" }, { label: "💸 Investir", value: "investir" }, { label: "🏗️ Construir", value: "construir" }]);
+                    } else {
+                        await botTalk("Qual será o uso?");
+                        showOptions([{ label: "🚗 Pessoal", value: "pessoal" }, { label: "💼 Trabalho", value: "trabalho" }, { label: "🔄 Troca", value: "troca" }]);
+                    }
+                }, process: (v) => { state.chat.data.usage = v; return { action: 'next' }; }
+            },
+            { // 2
+                ask: async () => {
+                    await botTalk("Sobre pressa, qual sua realidade?");
+                    showOptions([{ label: "⚡ Para Ontem", value: "imediata" }, { label: "🔥 3-6 Meses", value: "media" }, { label: "📅 Planejado", value: "longa" }, { label: "💰 Investimento", value: "investidor" }]);
+                }, process: (v) => { state.chat.data.urgency = v; return { action: 'next' }; }
+            },
+            { // 3
+                ask: async () => { await botTalk("Para validar as taxas, qual seu nome completo?"); setInputMode('text', 'Nome completo'); },
+                process: (v) => { state.chat.data.name = v; return { action: 'next' }; }
+            },
+            { // 4
+                ask: async () => { await botTalk(`Prazer, ${state.chat.data.name.split(' ')[0]}! Qual seu WhatsApp para eu enviar o PDF?`); setInputMode('phone', '(XX) 9XXXX-XXXX'); },
+                process: (v) => {
+                    if (!isValidPhone(v)) { botTalk("⚠️ Telefone inválido. Use (XX) 9XXXX-XXXX."); setInputMode('phone', '(XX) 9XXXX-XXXX'); return { action: 'wait' }; }
+                    state.chat.data.whatsapp = v; return { action: 'next' };
+                }
+            },
+            { // 5
+                ask: async () => { await botTalk("CPF? (Só para checar elegibilidade nos grupos Black)."); setInputMode('cpf', '000.000.000-00'); },
+                process: (v) => {
+                    const clean = v.replace(/\D/g, '');
+                    if (clean.length !== 11) { botTalk("⚠️ O CPF precisa ter 11 dígitos."); setInputMode('cpf', '000.000.000-00'); return { action: 'wait' }; }
+                    if (!isValidCPF(v)) { botTalk("⚠️ CPF não verificado, mas vamos seguir com a simulação. 🚀"); state.chat.data.tags.push('CPF_INVALIDO'); }
+                    state.chat.data.cpf = v; return { action: 'next' };
+                }
+            },
+            { // 6 - LANCE
+                ask: async () => {
+                    await botTalk("Sobre <b>Aceleração</b>. Você tem algum valor ou bem para dar de lance?");
+                    const opts = [{ label: "❌ Não tenho lance", value: "nada" }, { label: "💰 Dinheiro (Recurso Próprio)", value: "dinheiro" }];
+                    if (state.chat.data.goal === 'imovel') opts.push({ label: "🏦 FGTS", value: "fgts" });
+                    opts.push({ label: "🚗 Veículo", value: "carro" });
+                    if (state.chat.data.goal !== 'imovel') opts.push({ label: "🏠 Imóvel", value: "imovel" });
+                    opts.push({ label: "🤔 Como funciona?", value: "explicar" });
+                    showOptions(opts);
+                },
+                process: async (v) => {
+                    if (v === 'explicar') {
+                        await botTalk("<b>Lance:</b> É a chance de antecipar seu crédito ofertando um valor. Quem oferta mais, leva antes.");
+                        await botTalk("Você pretende ofertar algo?");
+                        const opts = [{ label: "❌ Não vou ofertar", value: "nada" }, { label: "💰 Sim, Dinheiro", value: "dinheiro" }];
+                        if (state.chat.data.goal === 'imovel') opts.push({ label: "🏦 Sim, FGTS", value: "fgts" });
+                        opts.push({ label: "🚗 Sim, Veículo", value: "carro" });
+                        showOptions(opts);
+                        return { action: 'wait' };
+                    }
+                    if (v === 'nada') {
+                        state.chat.data.has_lance = false;
+                        return { action: 'jump', target: 8 };
+                    }
+                    state.chat.data.has_lance = true; state.chat.data.asset_type = v;
+                    return { action: 'next' };
+                }
+            },
+            { // 7 - LANCE VALUE
+                ask: async () => {
+                    const t = state.chat.data.asset_type;
+                    let msg = `Qual o valor de mercado desse ${t}?`;
+                    if (t === 'dinheiro') msg = "Qual valor você tem disponível em dinheiro?";
+                    if (t === 'fgts') msg = "Qual o saldo aproximado do seu FGTS?";
+                    await botTalk(msg);
+                    setInputMode('currency', 'R$ 0,00');
+                },
+                process: (v) => { state.chat.data.lance_value = parseBRL(v); return { action: 'next' }; }
+            },
+            { // 8 - FINAL
+                ask: async () => {
+                    const goal = state.chat.data.goal || 'consórcio';
+                    await botTalk(`✨ <i>Analisando 12.000 grupos ativos para o perfil <b>${goal}</b>...</i>`);
+                    const profile = { goal, usage: state.chat.data.usage, urgency: state.chat.data.urgency, baseValue: state.preSim.value, lanceType: state.chat.data.has_lance ? state.chat.data.asset_type : "Zero", lanceValue: state.chat.data.lance_value || 0 };
+                    const aiMsg = await getGeminiAnalysis(profile);
+                    if (aiMsg) await botTalk(aiMsg, 800, true);
+                    await botTalk("Encontrei estas 3 rotas vencedoras:");
+                    setTimeout(renderCards, 800);
+                    UI.quickReplies.innerHTML = ''; setInputMode('hidden');
+                }, process: () => ({ action: 'wait' })
+            }
+        ];
+
+        async function initChatFlow() { state.chat.stepIndex = 0; await steps[0].ask(); }
+
+        async function handleInput(v, l) {
+            UI.quickReplies.innerHTML = '';
+            addMessage(l || v, 'user');
+            setInputMode('hidden');
+
+            if (state.chat.customHandler) {
+                await state.chat.customHandler(v, l);
+                return;
+            }
+
+            if (!steps[state.chat.stepIndex]) return;
+
+            const result = await steps[state.chat.stepIndex].process(v);
+
+            if (result.action === 'next') {
+                state.chat.stepIndex++;
+                if (state.chat.stepIndex < steps.length) await steps[state.chat.stepIndex].ask();
+            }
+            else if (result.action === 'jump') {
+                state.chat.stepIndex = result.target;
+                if (state.chat.stepIndex < steps.length) await steps[state.chat.stepIndex].ask();
+            }
+        }
+
+        window.handleUserSubmit = (e) => { e.preventDefault(); const v = UI.input.value.trim(); if (v) handleInput(v, v); };
+
+        function renderCards() {
+            let base = state.preSim.value;
+            if (state.preSim.inputType === 'installment') base = (base * 180) / 1.25;
+            const urg = state.chat.data.urgency || 'media';
+
+            let cards = [];
+            if (urg === 'imediata') {
+                cards = [
+                    { id: 'contemplada', icon: '⚡', badge: '⚡ Entrega Rápida', title: 'Carta Contemplada', desc: 'Crédito já liberado. Exige entrada alta.', term: 100, rate: 0, entry: 0.35 },
+                    { id: 'rapida', icon: '🚀', badge: '🔥 Mais Escolhido', title: 'Aceleração Máxima', desc: 'Grupo em andamento, lance agressivo.', term: 140, rate: 16, entry: 0.25 },
+                    { id: 'media', icon: '⚖️', badge: '⚖️ Equilibrado', title: 'Lance Médio', desc: 'Equilíbrio entre prazo e aporte.', term: 160, rate: 14, entry: 0.15 }
+                ];
+            } else {
+                cards = [
+                    { id: 'longevidade', icon: '📅', badge: '📉 Menor Parcela', title: 'Parcela Menor', desc: 'Foco no longo prazo e fluxo de caixa.', term: 200, rate: 14, entry: 0 },
+                    { id: 'embutido', icon: '🧩', badge: '🧠 Sem Desembolso', title: 'Lance Embutido', desc: 'Use a própria carta para acelerar.', term: 180, rate: 16, entry: 0 },
+                    { id: 'padrao', icon: '💎', badge: '💎 Grupo Premium', title: 'Premium', desc: 'Grupos seletos com taxas reduzidas.', term: 150, rate: 13, entry: 0.10 }
+                ];
+            }
+
+            const container = document.createElement('div');
+            container.className = "flex flex-col gap-4 w-full mt-2 message-enter pb-6";
+
+            cards.forEach(c => {
+                let entryVal = base * c.entry;
+                let monthly = c.id === 'contemplada' ? ((base * 1.15) - entryVal) / c.term : (base * (1 + c.rate / 100)) / c.term;
+
+                const el = document.createElement('div');
+                el.className = "card-option bg-white p-5 rounded-3xl border border-gray-100 shadow-sm cursor-pointer relative overflow-hidden group hover:shadow-lg transition-shadow duration-300";
+
+                el.innerHTML = `
+                    <div class="absolute top-0 left-0 w-1.5 h-full transition-colors group-hover:bg-emerald-400 bg-gray-200"></div>
+                    <div class="mb-3 pl-3">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">${c.badge}</span>
+                    </div>
+                    <div class="flex justify-between items-start mb-3 pl-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">${c.icon}</div>
+                            <div><h3 class="font-display font-bold text-lg" style="color:var(--text-main)">${c.title}</h3></div>
+                        </div>
+                        <div class="text-right"><p class="text-xs font-bold opacity-40 uppercase">Mensal</p><p class="font-display font-bold text-xl" style="color:var(--text-main)">${formatCurrency(monthly)}</p></div>
+                    </div>
+                    <p class="text-sm opacity-60 mb-4 pl-3 leading-snug">${c.desc}</p>
+                    <div class="flex gap-2 pl-3 mb-4">
+                        <span class="px-3 py-1 rounded-lg bg-gray-50 text-xs font-bold border border-gray-100" style="color:var(--text-sec)">${c.term}x</span>
+                        <span class="px-3 py-1 rounded-lg text-xs font-bold border" style="background:var(--color-mint-light); color:var(--text-sec); border-color:var(--color-mint)">Crédito: ${formatCurrency(base)}</span>
+                    </div>
+                    <div class="pl-3 mt-2">
+                        <button class="w-full py-3 rounded-full font-bold text-sm uppercase tracking-wide transition-transform active:scale-95 hover:brightness-105" 
+                                style="background: var(--color-mint); color: var(--text-main); box-shadow: 0 4px 10px rgba(148, 246, 173, 0.4);">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                `;
+                el.onclick = () => openModal({ ...c }, base);
+                container.appendChild(el);
+            });
+            UI.chatBox.appendChild(container);
+            scrollToBottom();
+        }
+
+        window.openModal = async (data, base) => {
+            state.simDetail = { ...data, base };
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-subtitle').textContent = data.desc;
+
+            const aiBox = document.getElementById('modal-ai-insight');
+            const aiText = document.getElementById('modal-ai-text');
+            aiBox.classList.remove('hidden'); aiText.textContent = "Carregando análise...";
+            UI.modal.classList.remove('hidden');
+
+            const profile = { goal: state.chat.data.goal, urgency: state.chat.data.urgency, lanceType: state.chat.data.has_lance ? "Sim" : "Não" };
+            const insight = await getGeminiCardInsight(data.title, profile);
+            if (insight) aiText.innerHTML = insight;
+
+            const s1 = document.getElementById('livre-slider'); s1.max = base * 0.6; s1.value = state.chat.data.lance_value || 0;
+            const s2 = document.getElementById('embutido-slider'); s2.value = 0;
+            updateMixer();
+        }
+
+        window.updateMixer = () => {
+            const d = state.simDetail;
+            const livre = parseFloat(document.getElementById('livre-slider').value);
+            const embPct = parseFloat(document.getElementById('embutido-slider').value);
+            const embVal = d.base * (embPct / 100);
+
+            document.getElementById('livre-display').textContent = formatCurrency(livre);
+            document.getElementById('embutido-display').textContent = `${embPct}%`;
+
+            const totalLance = livre + embVal;
+            const totalLancePct = (totalLance / d.base) * 100;
+
+            const bar = document.getElementById('chance-bar');
+            const txt = document.getElementById('chance-text');
+            let color = '#EF4444', label = 'Baixa';
+            if (totalLancePct > 15) { color = '#FBBF24'; label = 'Média'; }
+            if (totalLancePct > 30) { color = '#10B981'; label = 'Alta'; }
+            if (d.id === 'contemplada') { color = '#4F46E5'; label = 'Garantida'; bar.style.width = '100%'; }
+            else bar.style.width = `${Math.min(totalLancePct * 2.5, 100)}%`;
+            bar.style.backgroundColor = color;
+            txt.textContent = label;
+
+            const netCredit = d.base - embVal;
+            const totalDebt = d.base * (1 + d.rate / 100);
+            const monthly = (totalDebt - livre) / d.term;
+
+            state.chat.data.finalRoute = { title: d.title, monthly, term: d.term, credit: netCredit, totalCost: totalDebt, groupProb: label, lanceLivre: livre, lanceEmb: embVal };
+
+            document.getElementById('modal-installment').textContent = formatCurrency(monthly);
+            document.getElementById('modal-credit').textContent = formatCurrency(netCredit);
+            document.getElementById('modal-credit-gross').textContent = `Carta Cheia: ${formatCurrency(d.base)}`;
+            document.getElementById('modal-total-lance').textContent = `${totalLancePct.toFixed(1)}%`;
+            document.getElementById('modal-total-lance-val').textContent = formatCurrency(totalLance);
+            document.getElementById('modal-total').textContent = formatCurrency(totalDebt);
+            document.getElementById('modal-term-display').textContent = `${d.term}x`;
+        }
+
+        window.closeModal = () => UI.modal.classList.add('hidden');
+        window.reopenModal = () => UI.modal.classList.remove('hidden');
+
+        // GLOBAL FUNCTIONS FOR DYNAMIC BUTTONS
+        window.handlePaymentDone = async () => {
+            document.getElementById('quick-replies').innerHTML = '';
+            addMessage("Já paguei", 'user');
+
+            await botTalk("Pagamento identificado! 🚀 Parabéns, você está a um passo do seu objetivo.");
+            await botTalk("Para oficializar o check-in na Embracon (Administradora), preciso que envie uma foto do seu RG/CNH.");
+
+            const uploadBtn = document.createElement('div');
+            uploadBtn.className = "w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100 transition mt-2";
+            uploadBtn.innerHTML = `<i class="fa-solid fa-camera text-2xl text-gray-400 mb-2"></i><br><span class="text-gray-600 font-medium">Tirar foto ou enviar arquivo</span>`;
+
+            uploadBtn.onclick = async () => {
+                uploadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-2xl text-indigo-600"></i><br><span class="text-indigo-600 font-bold">Validando IA...</span>`;
+                setTimeout(async () => {
+                    uploadBtn.innerHTML = `<i class="fa-solid fa-check-circle text-3xl text-emerald-500 mb-2"></i><br><span class="text-emerald-700 font-bold">Documento Validado!</span>`;
+
+                    await botTalk("Extraí seus dados com sucesso. Por favor, confirme se está tudo correto para o contrato:");
+
+                    const formDiv = document.createElement('div');
+                    formDiv.className = "w-full bg-white border border-gray-200 rounded-2xl p-6 mt-3 shadow-sm text-sm space-y-4";
+
+                    formDiv.innerHTML = `
+                        <h3 class="font-bold border-b pb-2 text-lg mb-2" style="color:var(--text-main)">Check-in Embracon</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">Nome Completo</label><input type="text" value="${state.chat.data.name}" class="input-mint-glass"></div>
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">CPF</label><input type="text" value="${state.chat.data.cpf}" class="input-mint-glass" disabled style="opacity:0.6"></div>
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">RG</label><input type="text" placeholder="Digite seu RG" class="input-mint-glass"></div>
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">Endereço Residencial</label><input type="text" placeholder="Rua, Número, Bairro" class="input-mint-glass"></div>
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">CEP</label><input type="text" placeholder="00000-000" class="input-mint-glass"></div>
+                            <div><label class="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">E-mail</label><input type="email" placeholder="seu@email.com" class="input-mint-glass"></div>
+                            <div class="pt-2"><p class="text-xs font-bold mb-2 uppercase tracking-wider" style="color:var(--text-main)">Dados Bancários</p>
+                                <input type="text" placeholder="Banco (Ex: Nubank)" class="input-mint-glass mb-2">
+                                <div class="flex gap-2"><input type="text" placeholder="Agência" class="input-mint-glass"><input type="text" placeholder="Conta + Dígito" class="input-mint-glass"></div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Create button safely
+                    const btnConfirm = document.createElement('button');
+                    btnConfirm.className = "w-full btn-mint font-bold py-4 rounded-full mt-4 shadow-lg flex items-center justify-center gap-2";
+                    btnConfirm.innerHTML = `Confirmar Dados <i class="fa-solid fa-check"></i>`;
+                    btnConfirm.onclick = () => window.finishProcess();
+
+                    formDiv.appendChild(btnConfirm);
+                    UI.chatBox.appendChild(formDiv);
+                    scrollToBottom();
+                }, 2000);
+            };
+            UI.chatBox.appendChild(uploadBtn);
+            scrollToBottom();
+        }
+
+        window.finishProcess = async () => {
+            const hash = "AF" + Math.random().toString(36).substring(2, 10).toUpperCase();
+            document.getElementById('chat-box').lastElementChild.innerHTML = `<div class="bg-emerald-50 p-4 rounded-xl text-center"><i class="fa-solid fa-check-circle text-emerald-500 text-3xl mb-2"></i><p class="font-bold text-emerald-800">Dados Confirmados!</p></div>`;
+            await botTalk("🎉 <b>Parabéns!</b> Seu processo foi finalizado com sucesso.");
+            const successCard = document.createElement('div');
+            successCard.className = "w-full rounded-3xl p-8 mt-4 shadow-xl relative overflow-hidden message-enter border border-white/50";
+            successCard.style.background = "linear-gradient(135deg, #ffffff 0%, #E3FFEE 100%)";
+            successCard.innerHTML = `
+                <div class="absolute top-0 right-0 p-6 opacity-10 text-emerald-600"><i class="fa-solid fa-trophy text-8xl"></i></div>
+                <p class="text-xs font-bold uppercase tracking-normal mb-2" style="color:var(--text-sec)">Comprovante de Adesão</p>
+                <h2 class="text-3xl font-display font-bold mb-6 tracking-normal" style="color:var(--text-main)">Bem-vindo ao Grupo!</h2>
+                <div class="bg-white/60 rounded-2xl p-4 mb-6 backdrop-blur-md border border-white/60 shadow-sm"><p class="text-xs font-medium text-gray-500 mb-1 tracking-normal">Hash de Transação</p><p class="font-mono text-emerald-600 font-bold tracking-normal text-sm break-all">${hash}</p></div>
+                <p class="text-sm text-gray-600 mb-8 font-medium leading-relaxed tracking-normal">Você receberá o acesso ao portal do cliente no seu e-mail em até 24h.</p>
+                <a href="https://wa.me/5511999999935?text=Ola,%20finalizei%20meu%20contrato!%20Hash:${hash}" target="_blank" class="block w-full text-center font-bold py-4 rounded-full transition shadow-lg hover:translate-y-[-2px]" style="background:var(--color-mint); color:var(--text-main)"><i class="fa-brands fa-whatsapp mr-2"></i> Acompanhar Processo</a>
+            `;
+            UI.chatBox.appendChild(successCard);
+            scrollToBottom();
+        }
+
+        window.confirmRoute = () => {
+            closeModal();
+            const route = state.chat.data.finalRoute;
+            addMessage(`Estratégia Escolhida: ${route.title}`, 'user');
+
+            setTimeout(async () => {
+                await botTalk("Ótima escolha! Para prosseguir, como você prefere fechar?");
+                showOptions([{ label: "🤖 Automatizar (Eu mesmo fecho)", value: "auto" }, { label: "👨‍💼 Falar com Especialista", value: "human" }]);
+            }, 600);
+
+            state.chat.stepIndex = 999;
+
+            state.chat.customHandler = async (v, l) => {
+                if (v === 'human') {
+                    await botTalk("Sem problemas. Vou transferir todos os dados para um especialista humano.");
+                    setTimeout(() => { window.open("https://wa.me/5511999999935?text=Ola,%20gostaria%20de%20falar%20com%20especialista%20sobre%20a%20simulacao.", "_blank"); }, 1000);
+                } else {
+                    await botTalk("Perfeito! Aqui está o resumo final da sua proposta antes do pagamento:");
+                    const proposalDiv = document.createElement('div');
+                    proposalDiv.className = "w-full bg-white border border-gray-200 rounded-2xl p-5 mt-2 message-enter shadow-lg";
+                    proposalDiv.innerHTML = `
+                        <div class="border-b pb-3 mb-3 flex justify-between items-center">
+                            <span class="font-bold text-lg" style="color:var(--text-main)">Resumo da Proposta</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded" style="background:var(--color-mint-light); color:var(--text-sec)">Grupo #${Math.floor(Math.random() * 5000) + 1000}</span>
+                        </div>
+                        <div class="space-y-2 text-sm opacity-80">
+                            <div class="flex justify-between"><span>Crédito Líquido:</span> <span class="font-bold text-black">${formatCurrency(route.credit)}</span></div>
+                            <div class="flex justify-between"><span>Parcela Inicial:</span> <span class="font-bold text-black">${formatCurrency(route.monthly)}</span></div>
+                            <div class="flex justify-between"><span>Prazo:</span> <span class="font-bold text-black">${route.term} meses</span></div>
+                            <div class="flex justify-between"><span>Lance Definido:</span> <span class="font-bold" style="color:var(--color-mint-hover)">${formatCurrency(route.lanceLivre + route.lanceEmb)}</span></div>
+                            <div class="flex justify-between"><span>Probabilidade:</span> <span class="font-bold text-blue-600">${route.groupProb}</span></div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t text-xs opacity-50 text-center">Taxa Adm 14% (Diluída) • Fundo Reserva 2%</div>
+                        <div class="mt-4 pt-2 border-t border-gray-100 flex flex-col gap-2">
+                            <button onclick="reopenModal()" class="w-full text-center py-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition"><i class="fa-solid fa-rotate mr-1"></i> Personalizar ou Escolher Outra</button>
+                        </div>
+                    `;
+                    UI.chatBox.appendChild(proposalDiv);
+                    scrollToBottom();
+
+                    await botTalk("Confirma os valores para gerarmos o contrato?");
+                    showOptions([{ label: "✅ Confirmar e Pagar", value: "pay" }]);
+
+                    state.chat.customHandler = async (v2) => {
+                        await botTalk("Gerando Pix para adesão (1ª Parcela)...");
+                        const pixCode = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913Alfredo AI6008Sao Paulo62070503***6304E2CA";
+
+                        const pixDiv = document.createElement('div');
+                        pixDiv.className = "w-full text-white rounded-2xl p-6 mt-3 message-enter text-center shadow-xl relative overflow-hidden";
+                        pixDiv.style.background = "var(--text-main)";
+
+                        // Split HTML to inject button safely
+                        pixDiv.innerHTML = `
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-indigo-500"></div>
+                            <i class="fa-brands fa-pix text-4xl mb-3 text-emerald-400"></i>
+                            <p class="font-bold text-xl mb-1">${formatCurrency(route.monthly)}</p>
+                            <p class="text-xs text-gray-400 mb-4">Pagamento instantâneo</p>
+                            <div class="bg-white p-2 rounded-lg mb-4 inline-block">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${pixCode}" class="w-32 h-32">
+                            </div>
+                            <button onclick="navigator.clipboard.writeText('${pixCode}'); this.innerHTML = '<i class=\\'fa-solid fa-check\\'></i> Código Copiado!'" class="w-full font-bold py-3 rounded-full transition mb-3" style="background:var(--color-mint); color:var(--text-main)">Copiar Pix Copia e Cola</button>
+                        `;
+
+                        // Create button manually to ensure event binding works
+                        const btnPaid = document.createElement('button');
+                        btnPaid.className = "w-full bg-transparent border border-gray-500 text-gray-300 hover:text-white hover:border-white font-bold py-3 rounded-full transition";
+                        btnPaid.textContent = "Já paguei";
+                        btnPaid.onclick = () => window.handlePaymentDone();
+
+                        pixDiv.appendChild(btnPaid);
+
+                        UI.chatBox.appendChild(pixDiv);
+                        scrollToBottom();
+
+                        state.chat.customHandler = null;
+                    };
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>

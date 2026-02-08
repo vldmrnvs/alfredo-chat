@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Default overrides if necessary, but glass.css handles most. */
+:root {
+  font-family: 'Geist Sans', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@layer components {
+  .range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 8px;
+    outline: none;
+    transition: background 450ms ease-in;
+  }
+
+  /* Reset Track Styles to show the gradient from the input background */
+  .range-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 8px;
+    border: none;
+  }
+
+  .range-slider::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 8px;
+    border: none;
+  }
+
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #94F6AD;
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s ease;
+  }
+
+  .range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .animate-border-pulse {
+    animation: border-pulse 2s infinite;
+  }
+
+  @keyframes border-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(148, 246, 173, 0.7);
+    }
+
+    70% {
+      box-shadow: 0 0 0 10px rgba(148, 246, 173, 0);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(148, 246, 173, 0);
+    }
+  }
+}
