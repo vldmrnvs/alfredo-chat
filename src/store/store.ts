@@ -62,12 +62,14 @@ interface ChatState {
   inputType: 'text' | 'currency' | 'phone' | 'options' | 'hidden' | 'cpf';
   quickReplies?: { label: string; value: string }[];
   isTyping: boolean;
+  activeModal: 'none' | 'how_it_works' | 'products' | 'contact';
 
   // Actions
   setView: (view: View) => void;
   addMessage: (msg: Omit<ChatMessage, 'id'>) => void;
   updateUserData: (data: Partial<UserData>) => void;
   setModalOpen: (open: boolean) => void;
+  setActiveModal: (modal: 'none' | 'how_it_works' | 'products' | 'contact') => void;
   setStepIndex: (idx: number) => void;
   setTyping: (typing: boolean) => void;
   resetChat: () => void;
@@ -96,6 +98,9 @@ export const useChatStore = create<ChatState>((set) => ({
   inputType: 'hidden',
   quickReplies: [],
   isTyping: false,
+
+  activeModal: 'none' as 'none' | 'how_it_works' | 'products' | 'contact',
+  setActiveModal: (modal: 'none' | 'how_it_works' | 'products' | 'contact') => set({ activeModal: modal }),
 
   setView: (view) => set({ view }),
   addMessage: (msg) => set((state) => ({
@@ -126,6 +131,7 @@ export const useChatStore = create<ChatState>((set) => ({
       tags: [],
     },
     modalOpen: false,
+    activeModal: 'none',
     stepIndex: 0,
     inputType: 'hidden',
     quickReplies: []
