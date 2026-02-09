@@ -106,16 +106,16 @@ export default function DocumentCheckinCard() {
                     <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-gray-200 mb-4 border border-gray-300 shadow-inner">
                         <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <button
                             onClick={retryPreview}
-                            className="flex-1 py-3 bg-white border border-red-200 text-red-500 rounded-xl font-bold hover:bg-red-50 transition flex items-center justify-center gap-2"
+                            className="w-full sm:flex-1 py-3 bg-white border border-red-200 text-red-500 rounded-xl font-bold hover:bg-red-50 transition flex items-center justify-center gap-2"
                         >
                             <Trash2 size={18} /> Tentar Novamente
                         </button>
                         <button
                             onClick={confirmPreview}
-                            className="flex-1 py-3 btn-mint rounded-xl font-bold flex items-center justify-center gap-2 shadow-md"
+                            className="w-full sm:flex-1 py-3 btn-mint rounded-xl font-bold flex items-center justify-center gap-2 shadow-md"
                         >
                             <CheckCircle size={18} /> Usar Foto
                         </button>

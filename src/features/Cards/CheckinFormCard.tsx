@@ -43,7 +43,7 @@ export default function CheckinFormCard() {
             <h3 className="font-bold border-b pb-2 text-lg mb-2">Check-in Embracon</h3>
             <div className="grid grid-cols-1 gap-4 text-left">
                 {/* Read Only / Pre-filled */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label>Nome</Label>
                         <input type="text" readOnly value={userData.name} className="input-mint-glass opacity-70" disabled />
@@ -63,7 +63,7 @@ export default function CheckinFormCard() {
                 </div>
 
                 {/* Contacts */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label required>E-mail</Label>
                         <input id="chk-email" type="email" placeholder="seu@email.com" className={getInputClass("chk-email")} />
@@ -75,7 +75,7 @@ export default function CheckinFormCard() {
                 </div>
 
                 {/* Personal */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label required>Data Nasc.</Label>
                         <input id="chk-birth" type="date" className={getInputClass("chk-birth")} />
@@ -89,7 +89,7 @@ export default function CheckinFormCard() {
                 {/* Address */}
                 <div>
                     <Label required>CEP</Label>
-                    <input id="chk-cep" type="text" placeholder="00000-000" className={getInputClass("chk-cep", "input-mint-glass w-1/2")} />
+                    <input id="chk-cep" type="text" placeholder="00000-000" className={getInputClass("chk-cep", "input-mint-glass w-full sm:w-1/2")} />
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                     <div className="col-span-3">
@@ -101,7 +101,7 @@ export default function CheckinFormCard() {
                         <input id="chk-num" type="text" className={getInputClass("chk-num")} />
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label>Bairro</Label>
                         <input id="chk-bairro" type="text" className="input-mint-glass" />

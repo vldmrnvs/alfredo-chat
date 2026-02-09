@@ -75,31 +75,31 @@ export default function PreSimulation() {
     };
 
     return (
-        <div id="pre-sim-screen" className="flex-1 overflow-y-auto p-6 md:p-12 flex flex-col z-10 fade-in h-full relative w-full max-w-4xl mx-auto scrollbar-hide">
+        <div id="pre-sim-screen" className="flex-1 overflow-y-auto p-6 md:p-12 flex flex-col z-10 h-full relative w-full max-w-4xl mx-auto scrollbar-hide">
             {/* Header Content */}
-            <div className="mt-4 pb-6">
+            <div className="mt-4 pb-6 animate-slide-up">
                 <div className="flex justify-start">
                     <div
                         className={
                             "rounded-full border border-black/5 bg-[#E3FFEE] text-base text-white transition-all ease-in"
                         }
                     >
-                        <span className="text-xs font-bold px-4 py-1 inline-block animate-shiny-text bg-clip-text text-transparent bg-gradient-to-r from-[#2D4A3A] via-[#94F6AD] to-[#2D4A3A] bg-[length:200%_100%]">
+                        <span className="text-xs font-medium px-4 py-1 inline-block animate-shiny-text bg-clip-text text-transparent bg-gradient-to-r from-[#2D4A3A] via-[#94F6AD] to-[#2D4A3A] bg-[length:200%_100%]">
                             ✨ Consultoria Digital
                         </span>
                     </div>
                 </div>
             </div>
-            <h2 className="font-display text-5xl md:text-6xl font-bold leading-tight mb-5 text-[#132116] tracking-tight">
+            <h2 className="font-display text-5xl md:text-6xl font-extrabold leading-tight mb-5 text-[#132116] tracking-tight animate-slide-up delay-100">
                 Qual o seu<br />próximo passo?
             </h2>
-            <p className="leading-relaxed opacity-70 text-[#404040] pb-6">
-                A inteligência artificial vai desenhar o melhor plano para você conquistar seu bem.
+            <p className="leading-relaxed opacity-70 text-[#404040] pb-6 animate-slide-up delay-200">
+                Nossa inteligência artificial analisa milhares de cenários para desenhar a estratégia perfeita para sua conquista.
             </p>
 
 
             {/* Assets Grid */}
-            <div className="grid grid-cols-3 gap-3 mb-8">
+            <div className="grid grid-cols-3 gap-3 mb-8 animate-slide-up delay-300">
                 <button
                     onClick={() => handleAssetSelect('imovel')}
                     className={`asset-btn p-4 rounded-[2rem] flex flex-col items-center gap-3 group border-2 transition-all duration-300 relative overflow-hidden
@@ -139,19 +139,19 @@ export default function PreSimulation() {
             </div>
 
             {/* Input Area */}
-            <div className="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA] flex-shrink-0">
+            <div className="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA] flex-shrink-0 animate-slide-up delay-400">
                 <div className="absolute top-0 left-0 w-1.5 h-full transition-colors bg-[#94F6AD]"></div>
 
                 <div className="flex justify-between items-center mb-4">
-                    <label className="font-bold text-sm tracking-tight opacity-80 text-[#132116]">
+                    <label className="font-medium text-sm tracking-tight opacity-80 text-[#132116]">
                         {inputType === 'credit' ? 'Valor do Crédito' : 'Parcela Mensal Ideal'}
                     </label>
                     <button
                         onClick={toggleInputMode}
-                        className="text-xs font-bold hover:opacity-70 transition flex items-center gap-1 text-[#2D4A3A]"
+                        className="text-xs font-medium hover:bg-[#94F6AD] hover:text-[#132116] transition-all flex items-center gap-2 text-[#2D4A3A] bg-white px-3 py-1.5 rounded-full shadow-sm border border-[#E5E5E5]"
                         disabled={isBudgetBased} // Disable toggle if checkbox is checked
                     >
-                        <RefreshCw size={10} /> Alternar
+                        <RefreshCw size={12} /> Alternar
                     </button>
                 </div>
 
@@ -162,14 +162,14 @@ export default function PreSimulation() {
                         inputMode="numeric"
                         value={inputValue}
                         onChange={handleChange}
-                        className="w-full bg-transparent border-none p-0 font-display font-bold text-3xl placeholder-gray-300 focus:ring-0 outline-none text-[#132116]"
+                        className="w-full bg-transparent border-none p-0 font-display font-black text-3xl placeholder-gray-300 focus:ring-0 outline-none text-[#132116]"
                         placeholder={inputType === 'credit' ? "200.000,00" : "1.500,00"}
                     />
                 </div>
             </div>
 
             {/* Checkbox */}
-            <div className="mb-auto">
+            <div className="mb-auto animate-slide-up delay-500">
                 <label className="flex items-start gap-3 p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer group">
                     <div className="relative flex-shrink-0 flex items-center mt-0.5">
                         <input
@@ -199,7 +199,7 @@ export default function PreSimulation() {
             {/* Start Button */}
             <button
                 onClick={startSimulation}
-                className="w-full btn-mint font-display font-bold text-lg py-5 rounded-full shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4"
+                className="w-full btn-mint font-display font-bold text-lg py-5 rounded-full shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4 animate-slide-up delay-600"
             >
                 <span>Iniciar Simulação</span>
                 <ArrowRight size={20} />

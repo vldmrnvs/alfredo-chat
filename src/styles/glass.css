@@ -1,6 +1,4 @@
 /* --- BRANDING & LIQUID GLASS SYSTEM --- */
-@import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
-
 
 :root {
   --font-body: 'Geist Sans', sans-serif;
@@ -22,7 +20,9 @@
 body {
   font-family: var(--font-body);
   background-color: #ffffff;
-  background-image: radial-gradient(at 0% 0%, hsla(136, 80%, 90%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(84, 90%, 90%, 1) 0, transparent 50%);
+  /* background-image: radial-gradient(at 0% 0%, hsla(136, 80%, 90%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(84, 90%, 90%, 1) 0, transparent 50%); */
+  background: linear-gradient(to bottom, #ffffff 0%, #E3FFEE 100%);
+  background-attachment: fixed;
   color: var(--text-main);
   margin: 0;
   height: 100vh;
@@ -191,6 +191,23 @@ h3,
 .input-mint-glass::placeholder {
   color: #A0A0A0;
   font-weight: 400;
+}
+
+/* Fix for Date Picker in Production/Mobile */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  min-height: 48px;
+  /* Ensure touch target */
+  /* padding-right: 10px; */
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.5);
+  /* Match glass input */
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 input[type=range] {

@@ -278,7 +278,14 @@ const steps: Step[] = [
         id: 6, // After Strategy Selection -> Capture Contact (Name)
         ask: async () => {
             const { addMessage } = useChatStore.getState();
+
+            // 1. Show Proposal Summary immediately after selection
             await chatService.botTyping();
+            addMessage({ type: 'text', content: "Aqui está o resumo da estratégia escolhida:", sender: 'bot' });
+            addMessage({ type: 'card', content: 'proposal', sender: 'bot' });
+
+            // 2. Ask Name
+            await chatService.botTyping(1500);
             addMessage({ type: 'text', content: "Ótima escolha! Para formalizar a proposta, qual seu nome completo?", sender: 'bot' });
             useChatStore.setState({ inputType: 'text' } as any);
         },
@@ -353,12 +360,10 @@ const steps: Step[] = [
         id: 9, // Checkout / Proposal Summary
         ask: async () => {
             const { addMessage } = useChatStore.getState();
-            await chatService.botTyping();
-            addMessage({ type: 'text', content: "Gerando resumo final...", sender: 'bot' });
+            // Proposal Card was already shown in Step 6.
+            // Just ask for confirmation/checkout options.
 
-            await chatService.botTyping(1000);
-            // Show Proposal Card
-            addMessage({ type: 'card', content: 'proposal', sender: 'bot' });
+            await chatService.botTyping();
 
             // Ask for confirmation
             await chatService.botTyping();
@@ -366,12 +371,36 @@ const steps: Step[] = [
 
             useChatStore.setState({
                 inputType: 'options', quickReplies: [
-                    { label: "✅ Confirmar e Pagar", value: "pay" }
+                    { label: "🤖 Sistema Automático", value: "pay" },
+                    { label: "👤 Falar com Humano", value: "human" }
                 ]
             } as any);
         },
         process: async (v) => {
             if (v === 'pay') return { action: 'next' };
+
+            if (v === 'human') {
+                const { addMessage, userData } = useChatStore.getState();
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "Entendi! Um de nossos especialistas vai te ajudar pessoalmente. Clique abaixo para chamar no WhatsApp:",
+                    sender: 'bot'
+                });
+
+                // Construct WhatsApp Link
+                const message = `Olá! Me chamo ${userData.name}. Estava na simulação (R$ ${userData.value}) e gostaria de ajuda humana.`;
+                const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+
+                addMessage({
+                    type: 'text',
+                    content: `<a href="${whatsappUrl}" target="_blank" class="underline font-bold text-green-600">👉 Falar no WhatsApp</a>`,
+                    sender: 'bot'
+                });
+
+                return { action: 'wait' }; // Stay here so they can choose "pay" later if they want
+            }
+
             return { action: 'wait' };
         }
     },

@@ -87,8 +87,8 @@ export default function StrategyModal() {
     if (!mounted) return null;
 
     return (
-        <div className={`fixed inset-0 z-[60] flex justify-center p-0 md:p-4 bg-[rgba(19,33,22,0.4)] backdrop-blur-sm transition-opacity ${modalOpen ? 'opacity-100' : 'opacity-0'}`}>
-            <div className={`bg-white w-full h-[95vh] md:h-auto md:max-h-[96%] rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transition-transform duration-500 ${modalOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className={`fixed inset-0 z-[60] flex justify-center bg-white transition-opacity ${modalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`bg-white w-full h-full shadow-2xl flex flex-col overflow-hidden transition-transform duration-500 ${modalOpen ? 'translate-y-0' : 'translate-y-full'}`}>
 
                 {/* Header */}
                 <div className="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
@@ -199,13 +199,13 @@ export default function StrategyModal() {
                             <input
                                 type="range"
                                 min="0"
-                                max="30"
+                                max="25"
                                 step="5"
                                 value={lanceEmbutidoPct}
                                 onChange={(e) => setLanceEmbutidoPct(Number(e.target.value))}
                                 className="w-full range-slider cursor-pointer"
                                 style={{
-                                    background: `linear-gradient(to right, #CEFA83 0%, #CEFA83 ${(lanceEmbutidoPct / 30) * 100}%, #e5e5e5 ${(lanceEmbutidoPct / 30) * 100}%, #e5e5e5 100%)`
+                                    background: `linear-gradient(to right, #CEFA83 0%, #CEFA83 ${(lanceEmbutidoPct / 25) * 100}%, #e5e5e5 ${(lanceEmbutidoPct / 25) * 100}%, #e5e5e5 100%)`
                                 }}
                             />
                         </div>

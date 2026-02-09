@@ -52,16 +52,28 @@ export default function MessageRenderer({ message }: MessageRendererProps) {
 
     return (
         <div className={clsx(
-            "flex w-full message-enter",
+            "flex w-full message-enter items-start gap-2",
             isBot ? "justify-start" : "justify-end"
         )}>
+            {isBot && (
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 shadow-sm flex-shrink-0 mt-1">
+                    <img alt="Alfredo" className="w-full h-full object-cover" src="/alfredo-avatar.png" />
+                </div>
+            )}
+
             <div className={clsx(
-                "max-w-[85%] p-4 text-[15px] leading-relaxed relative",
+                "max-w-[75%] p-4 text-base leading-relaxed relative",
                 isBot ? "bubble-alfredo rounded-2xl rounded-tl-none text-[#2D4A3A]" : "bubble-user rounded-2xl rounded-tr-none text-[#132116] font-medium text-right"
             )}>
                 {/* Safe HTML rendering for simple formatting like <b>, <i> */}
                 <span dangerouslySetInnerHTML={{ __html: message.content }} />
             </div>
+
+            {!isBot && (
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 shrink-0 mt-1">
+                    <span className="text-sm">👤</span>
+                </div>
+            )}
         </div>
     );
 }
