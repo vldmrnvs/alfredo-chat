@@ -139,7 +139,7 @@ export default function PreSimulation() {
             </div>
 
             {/* Input Area */}
-            <div className="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA]">
+            <div className="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA] flex-shrink-0">
                 <div className="absolute top-0 left-0 w-1.5 h-full transition-colors bg-[#94F6AD]"></div>
 
                 <div className="flex justify-between items-center mb-4">
