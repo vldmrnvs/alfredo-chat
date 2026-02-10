@@ -6,6 +6,7 @@ import { useChatStore } from '../../store/store';
 export default function PixPaymentCard() {
     const { userData } = useChatStore();
     const [hasPaid, setHasPaid] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     const pixCode = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913Alfredo AI6008Sao Paulo62070503***6304E2CA";
     const amount = userData.finalRoute ? userData.finalRoute.monthly : 0;
