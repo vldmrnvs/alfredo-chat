@@ -108,7 +108,7 @@ export default function ChatInterface() {
             {/* Chat Box - Scrollable Area */}
             <div id="chat-box" className="flex-1 overflow-y-auto w-full scrollbar-hide">
                 {/* Content Wrapper - Aligned with Header */}
-                <div className="w-full max-w-5xl mx-auto p-6 space-y-6 pb-40">
+                <div className="w-full max-w-5xl mx-auto p-[18px] md:p-6 space-y-6 pb-40">
                     {/* Header / Timestamp */}
                     <div className="flex justify-center py-4 opacity-50 text-xs font-bold uppercase tracking-widest text-[#2D4A3A]">
                         Alfredo • Consultoria Inteligente
@@ -132,7 +132,7 @@ export default function ChatInterface() {
                                 <button
                                     key={qr.value}
                                     onClick={() => handleQuickReply(qr.value, qr.label)}
-                                    className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-bold shadow-sm border transition-all mb-1 hover:shadow-md bg-white border-[#94F6AD] text-[#2D4A3A] hover:bg-[#94F6AD] hover:text-[#132116]"
+                                    className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-medium shadow-sm border transition-all mb-1 hover:shadow-md bg-white border-[#94F6AD] text-[#2D4A3A] hover:bg-[#94F6AD] hover:text-[#132116]"
                                 >
                                     {qr.label}
                                 </button>
@@ -151,12 +151,14 @@ export default function ChatInterface() {
                                 className="w-full border-0 rounded-2xl px-6 py-4 transition font-medium shadow-inner focus:ring-2 focus:bg-white bg-[rgba(255,255,255,0.6)] text-[#132116] placeholder-gray-400 focus:ring-[#94F6AD]"
                                 placeholder={getPlaceholder()}
                                 autoComplete="off"
+                                aria-label="Digite sua mensagem"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={isDisabled || !inputText}
                             className="w-14 h-14 rounded-full transition shadow-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 btn-mint flex-shrink-0"
+                            aria-label="Enviar mensagem"
                         >
                             <Send size={20} />
                         </button>

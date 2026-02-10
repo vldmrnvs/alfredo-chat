@@ -90,7 +90,7 @@ export default function PreSimulation() {
                     </div>
                 </div>
             </div>
-            <h2 className="font-display text-5xl md:text-6xl font-extrabold leading-tight mb-5 text-[#132116] tracking-tight animate-slide-up delay-100">
+            <h2 className="font-display text-5xl md:text-6xl font-semibold leading-tight mb-5 text-[#132116] tracking-tight animate-slide-up delay-100">
                 Qual o seu<br />próximo passo?
             </h2>
             <p className="leading-relaxed opacity-70 text-[#404040] pb-6 animate-slide-up delay-200">
@@ -109,7 +109,7 @@ export default function PreSimulation() {
                         }`}
                 >
                     <div className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">🏡</div>
-                    <span className={`text-xs font-bold transition-colors ${selectedAsset === 'imovel' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Imóvel</span>
+                    <span className={`text-xs font-medium transition-colors ${selectedAsset === 'imovel' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Imóvel</span>
                     {selectedAsset === 'imovel' && <div className="absolute inset-0 border-2 border-[#94F6AD] rounded-[2rem] animate-border-pulse pointer-events-none" />}
                 </button>
                 <button
@@ -121,7 +121,7 @@ export default function PreSimulation() {
                         }`}
                 >
                     <div className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">🚗</div>
-                    <span className={`text-xs font-bold transition-colors ${selectedAsset === 'auto' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Auto</span>
+                    <span className={`text-xs font-medium transition-colors ${selectedAsset === 'auto' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Auto</span>
                     {selectedAsset === 'auto' && <div className="absolute inset-0 border-2 border-[#94F6AD] rounded-[2rem] animate-border-pulse pointer-events-none" />}
                 </button>
                 <button
@@ -133,13 +133,13 @@ export default function PreSimulation() {
                         }`}
                 >
                     <div className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">🏍️</div>
-                    <span className={`text-xs font-bold transition-colors ${selectedAsset === 'moto' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Moto</span>
+                    <span className={`text-xs font-medium transition-colors ${selectedAsset === 'moto' ? 'text-[#132116]' : 'text-[#404040] opacity-80 group-hover:opacity-100'}`}>Moto</span>
                     {selectedAsset === 'moto' && <div className="absolute inset-0 border-2 border-[#94F6AD] rounded-[2rem] animate-border-pulse pointer-events-none" />}
                 </button>
             </div>
 
             {/* Input Area */}
-            <div className="p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA] flex-shrink-0 animate-slide-up delay-400">
+            <div className="py-6 px-[18px] md:p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E5E5] mb-6 relative overflow-hidden group transition-colors bg-[#FAFAFA] flex-shrink-0 animate-slide-up delay-400">
                 <div className="absolute top-0 left-0 w-1.5 h-full transition-colors bg-[#94F6AD]"></div>
 
                 <div className="flex justify-between items-center mb-4">
@@ -158,11 +158,13 @@ export default function PreSimulation() {
                 <div className="relative flex items-baseline gap-1">
                     <span className="font-medium text-lg opacity-40">R$</span>
                     <input
-                        type="text"
+                        type="tel"
                         inputMode="numeric"
+                        pattern="[0-9]*"
                         value={inputValue}
                         onChange={handleChange}
                         className="w-full bg-transparent border-none p-0 font-display font-black text-3xl placeholder-gray-300 focus:ring-0 outline-none text-[#132116]"
+                        aria-label={inputType === 'credit' ? "Valor do crédito" : "Valor da parcela"}
                         placeholder={inputType === 'credit' ? "200.000,00" : "1.500,00"}
                     />
                 </div>
@@ -199,7 +201,7 @@ export default function PreSimulation() {
             {/* Start Button */}
             <button
                 onClick={startSimulation}
-                className="w-full btn-mint font-display font-bold text-lg py-5 rounded-full shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4 animate-slide-up delay-600"
+                className="w-full btn-mint font-display font-medium text-lg py-5 rounded-full shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4 animate-slide-up delay-600"
             >
                 <span>Iniciar Simulação</span>
                 <ArrowRight size={20} />

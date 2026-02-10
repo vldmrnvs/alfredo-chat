@@ -5,7 +5,7 @@ import { useChatStore } from '../../store/store';
 
 export default function PixPaymentCard() {
     const { userData } = useChatStore();
-    const [copied, setCopied] = useState(false);
+    const [hasPaid, setHasPaid] = useState(false);
 
     const pixCode = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913Alfredo AI6008Sao Paulo62070503***6304E2CA";
     const amount = userData.finalRoute ? userData.finalRoute.monthly : 0;
@@ -17,6 +17,8 @@ export default function PixPaymentCard() {
     };
 
     const handlePaid = () => {
+        if (hasPaid) return;
+        setHasPaid(true);
         // Trigger flow advance
         advanceFlow('paguei');
     };
@@ -46,9 +48,10 @@ export default function PixPaymentCard() {
 
             <button
                 onClick={handlePaid}
-                className="w-full bg-transparent border border-gray-500 text-gray-300 hover:text-white hover:border-white font-bold py-3 rounded-full transition"
+                disabled={hasPaid}
+                className={`w-full bg-transparent border border-gray-500 text-gray-300 hover:text-white hover:border-white font-bold py-3 rounded-full transition ${hasPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-                Já paguei
+                {hasPaid ? 'Processando...' : 'Já paguei'}
             </button>
         </div>
     );

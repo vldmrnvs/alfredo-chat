@@ -105,18 +105,22 @@ export default function StrategyModal() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-white">
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-white">
                     {/* Route Selection Cards (Mini) if we want multiple choices visible, or just details of one */}
                     {/* For simplicity match original details view but maybe allow switching on top? */}
 
-                    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+                    <div className="grid grid-cols-3 gap-2 mb-6">
                         {routes.map(r => (
                             <button
                                 key={r.id}
                                 onClick={() => handleRouteSelect(r)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold whitespace-nowrap transition-all ${activeRoute?.id === r.id ? 'bg-[#132116] text-white border-[#132116]' : 'bg-white text-gray-500 border-gray-200'}`}
+                                className={`flex flex-col items-center justify-center text-center gap-1 px-1 py-3 rounded-xl border text-[11px] uppercase tracking-wide font-bold transition-all ${activeRoute?.id === r.id
+                                        ? 'bg-[#132116] text-white border-[#132116] ring-1 ring-[#132116]'
+                                        : 'bg-white text-gray-400 border-gray-100 hover:bg-gray-50'
+                                    }`}
                             >
-                                <span>{r.icon}</span> {r.title}
+                                <span className="text-base">{r.icon}</span>
+                                <span className="leading-tight">{r.title}</span>
                             </button>
                         ))}
                     </div>
@@ -124,7 +128,7 @@ export default function StrategyModal() {
                     <div className="text-center">
                         <p className="text-xs font-bold opacity-40 uppercase tracking-widest mb-2">Sua Parcela Estimada</p>
                         <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-5xl font-display font-bold tracking-tight text-[#132116]">
+                            <span className="text-[32px] md:text-5xl font-display font-bold tracking-tight text-[#132116]">
                                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(mix.monthly)}
                             </span>
                             <span className="font-medium opacity-40">/mês</span>
@@ -132,22 +136,23 @@ export default function StrategyModal() {
                     </div>
 
                     {/* Mixer UI */}
-                    <div className="rounded-3xl p-6 border border-gray-100 bg-[#FAFAFA]">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="font-bold flex items-center gap-2 text-[#132116]">
+                    <div className="mb-6">
+                        {/* Header Block: Title + Probability Strip */}
+                        <div className="flex flex-col items-start mb-6">
+                            <h3 className="font-bold flex items-center gap-2 text-[#132116] mb-2">
                                 <SlidersHorizontal size={18} className="opacity-40" /> Mixer de Lance
                             </h3>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-bold opacity-40 uppercase mb-1">Probabilidade</span>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-20 bg-gray-200 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full transition-all duration-500 ${mix.prob === 'Alta' ? 'bg-emerald-500' : mix.prob === 'Média' ? 'bg-yellow-400' : 'bg-red-500'}`}
-                                            style={{ width: mix.prob === 'Alta' ? '100%' : mix.prob === 'Média' ? '60%' : '30%' }}
-                                        ></div>
-                                    </div>
-                                    <span className="text-xs font-bold opacity-60 text-[#132116]">{mix.prob}</span>
+
+                            {/* Probability Status Strip - Mobile Optimized */}
+                            <div className="flex items-center gap-3 w-full">
+                                <span className="text-[10px] font-bold opacity-40 uppercase whitespace-nowrap">Probabilidade:</span>
+                                <div className="h-1.5 flex-1 bg-gray-200 rounded-full overflow-hidden max-w-[100px]">
+                                    <div
+                                        className={`h-full transition-all duration-500 ${mix.prob === 'Alta' ? 'bg-emerald-500' : mix.prob === 'Média' ? 'bg-yellow-400' : 'bg-red-500'}`}
+                                        style={{ width: mix.prob === 'Alta' ? '100%' : mix.prob === 'Média' ? '60%' : '30%' }}
+                                    ></div>
                                 </div>
+                                <span className="text-xs font-bold opacity-60 text-[#132116]">{mix.prob}</span>
                             </div>
                         </div>
 
@@ -213,7 +218,7 @@ export default function StrategyModal() {
 
                     {/* Details Grid */}
                     {/* Details Grid */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
                             <p className="text-[10px] font-bold opacity-40 uppercase mb-1">Crédito Líquido</p>
                             <p className="font-display font-bold text-lg text-[#132116]">
@@ -247,18 +252,18 @@ export default function StrategyModal() {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-white border-t border-gray-50 shrink-0">
-                    <button
-                        onClick={handleConfirm}
-                        className="w-full btn-mint font-display font-bold py-4 rounded-full shadow-xl hover:scale-[1.01] transition active:scale-95 flex items-center justify-center gap-3"
-                    >
-                        Confirmar Estratégia <Check size={20} />
-                    </button>
+                <div className="p-6 bg-gray-50 border-t border-gray-100 shrink-0 flex items-center gap-4">
                     <button
                         onClick={() => setModalOpen(false)}
-                        className="w-full text-center text-xs font-bold text-gray-400 uppercase tracking-widest mt-4 hover:text-gray-600 transition"
+                        className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition px-4 py-3"
                     >
                         Cancelar
+                    </button>
+                    <button
+                        onClick={handleConfirm}
+                        className="flex-1 btn-mint font-display font-bold py-4 rounded-full shadow-xl hover:scale-[1.01] transition active:scale-95 flex items-center justify-center gap-3"
+                    >
+                        Confirmar Estratégia <Check size={20} />
                     </button>
                 </div>
             </div>

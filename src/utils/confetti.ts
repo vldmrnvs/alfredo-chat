@@ -3,6 +3,7 @@
 declare var confetti: any;
 
 export const triggerCelebration = () => {
+    if (typeof confetti !== 'function') return;
     const colors = ['#94F6AD', '#CEFA83', '#2D4A3A', '#132116'];
 
     (function frame() {

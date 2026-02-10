@@ -19,7 +19,7 @@ export default function ProposalCard() {
             <div className="absolute inset-0 bg-white/90 backdrop-blur-xl border border-white/60"></div>
 
             {/* Header / Brand Strip */}
-            <div className="relative z-10 bg-white/50 border-b border-gray-100 p-5 flex justify-between items-center backdrop-blur-md">
+            <div className="relative z-10 bg-white/50 border-b border-gray-100 py-5 px-[18px] md:p-5 flex justify-between items-center backdrop-blur-md">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-[#E3FFEE] flex items-center justify-center border border-[#94F6AD]">
                         <span className="text-base">🚀</span>
@@ -39,7 +39,7 @@ export default function ProposalCard() {
             </div>
 
             {/* Content Body */}
-            <div className="relative z-10 p-5 space-y-5">
+            <div className="relative z-10 py-5 px-[18px] md:p-5 space-y-5">
 
                 {/* Main Hero Value */}
                 <div className="text-center pb-4 border-b border-gray-100/50">
