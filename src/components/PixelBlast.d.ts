@@ -1,4 +1,2 @@
-declare module './PixelBlast' {
-    const PixelBlast: any;
-    export default PixelBlast;
-}
+declare const PixelBlast: any;
+export default PixelBlast;
