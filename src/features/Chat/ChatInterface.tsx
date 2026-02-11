@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo, useCallback } from 'react';
 import { Send } from 'lucide-react';
 import { useChatStore } from '../../store/store';
 import { chatService } from '../../services/chatService';
@@ -30,7 +30,7 @@ const maskCPF = (value: string) => {
     return v;
 };
 
-export default function ChatInterface() {
+function ChatInterface() {
     const { messages, inputType, quickReplies, isTyping } = useChatStore();
     const [inputText, setInputText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -56,26 +56,31 @@ export default function ChatInterface() {
         }
     }, []);
 
-    // Auto scroll
+    // Auto scroll - optimized to only trigger when messages length changes
+    const messagesLengthRef = useRef(messages.length);
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        if (messages.length !== messagesLengthRef.current) {
+            messagesLengthRef.current = messages.length;
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages.length]);
 
-    const handleSubmit = (e?: React.FormEvent) => {
+    // Memoized handlers
+    const handleSubmit = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
         if (!inputText.trim()) return;
         chatService.processInput(inputText);
         setInputText('');
-    };
+    }, [inputText]);
 
-    const handleQuickReply = (value: string, label: string) => {
+    const handleQuickReply = useCallback((value: string, label: string) => {
         chatService.processInput(value, label);
-    };
+    }, []);
 
     const isDisabled = inputType === 'hidden';
 
     // Handling Masks
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         let val = e.target.value;
 
         if (inputType === 'currency') {
@@ -89,7 +94,7 @@ export default function ChatInterface() {
         }
 
         setInputText(val);
-    };
+    }, [inputType]);
 
     // Dynamic Placeholder Logic
     const getPlaceholder = () => {
@@ -104,11 +109,10 @@ export default function ChatInterface() {
 
     return (
 
-        <div id="chat-container" className="flex flex-col w-full h-full bg-[#f2f2f7] fade-in relative overflow-hidden">
-            {/* Chat Box - Scrollable Area */}
+        <div id="chat-container" className="flex flex-col w-full h-full bg-[#f2f2f7] fade-in overflow-hidden">
+            {/* Chat Box - Scrollable Area: flex-1 fills only the space ABOVE the footer */}
             <div id="chat-box" className="flex-1 overflow-y-auto w-full scrollbar-hide">
-                {/* Content Wrapper - Aligned with Header */}
-                <div className="w-full max-w-5xl mx-auto p-[18px] md:p-6 space-y-6 pb-40">
+                <div className="w-full max-w-5xl mx-auto p-[18px] md:p-6 space-y-6 pb-4">
                     {/* Header / Timestamp */}
                     <div className="flex justify-center py-4 opacity-50 text-xs font-bold uppercase tracking-widest text-[#2D4A3A]">
                         Alfredo • Consultoria Inteligente
@@ -122,24 +126,27 @@ export default function ChatInterface() {
                 </div>
             </div>
 
-            {/* Input Area - Fixed at bottom */}
-            <div className="absolute bottom-0 left-0 w-full glass-input-area rounded-t-[2rem] z-20">
-                <div className="w-full max-w-5xl mx-auto relative p-4 md:p-6">
-                    {/* Quick Replies */}
-                    {inputType === 'options' && quickReplies && quickReplies.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto py-4 px-6 scrollbar-hide absolute -top-20 left-0 w-full mask-linear z-10">
+            {/* Footer: action buttons + input. Sits naturally at the bottom of the flex layout */}
+            <div className="flex-shrink-0 w-full glass-input-area rounded-t-[2rem] z-20">
+                {/* Action Buttons - shown above input when options are available */}
+                {inputType === 'options' && quickReplies && quickReplies.length > 0 && (
+                    <div className="w-full max-w-5xl mx-auto px-4 md:px-6">
+                        <div className="flex gap-2 overflow-x-auto pt-4 pb-2 scrollbar-hide">
                             {quickReplies.map((qr: any) => (
                                 <button
                                     key={qr.value}
                                     onClick={() => handleQuickReply(qr.value, qr.label)}
-                                    className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-medium shadow-sm border transition-all mb-1 hover:shadow-md bg-white border-[#94F6AD] text-[#2D4A3A] hover:bg-[#94F6AD] hover:text-[#132116]"
+                                    className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-medium shadow-sm border transition-all hover:shadow-md bg-white border-[#94F6AD] text-[#2D4A3A] hover:bg-[#94F6AD] hover:text-[#132116]"
                                 >
                                     {qr.label}
                                 </button>
                             ))}
                         </div>
-                    )}
+                    </div>
+                )}
 
+                {/* Input Area */}
+                <div className="w-full max-w-5xl mx-auto relative p-4 md:p-6">
                     <form onSubmit={handleSubmit} className="flex gap-3 items-end">
                         <div className="flex-1 relative">
                             <input
@@ -169,3 +176,5 @@ export default function ChatInterface() {
     );
 
 }
+
+export default memo(ChatInterface);

@@ -30,11 +30,9 @@ export default function ProposalCard() {
                     </div>
                 </div>
                 {route.groupProb === 'Alta' && (
-                    <div className="px-3 py-1 rounded-full bg-[#94F6AD] border border-[#7EF39A] shadow-sm">
-                        <span className="text-[#132116] text-xs font-bold flex items-center gap-1">
-                            Alta Chance ⚡
-                        </span>
-                    </div>
+                    <span className="badge-attribute">
+                        ⚡ Alta Chance
+                    </span>
                 )}
             </div>
 
@@ -77,10 +75,24 @@ export default function ProposalCard() {
                             </div>
                         </div>
                         {/* Decimal decoration */}
-                        <div className="absolute -right-4 -bottom-8 text-[#94F6AD] opacity-30 text-9xl font-display font-bold pointer-events-none">
+                        <div className="absolute -right-4 -bottom-8 opacity-30 text-9xl font-display font-bold pointer-events-none" style={{ color: '#2D6B4A' }}>
                             %
                         </div>
                     </div>
+                </div>
+
+                {/* Partner Box */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100">
+                    <div className="flex items-center gap-3">
+                        <img
+                            src="/assets/embracon-logo.png"
+                            alt="Consórcio Embracon"
+                            className="h-7 object-contain"
+                        />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-[#2D4A3A] opacity-50">
+                        ✅ Parceiro Verificado
+                    </span>
                 </div>
 
                 {/* Footer Info */}

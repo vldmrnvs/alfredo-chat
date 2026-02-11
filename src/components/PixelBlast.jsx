@@ -132,6 +132,7 @@ void main() {
 }
 `;
 
+// OPTIMIZED: Reduced FBM octaves from 5 to 2 (60% less calculations)
 const FRAGMENT_SRC = `
 precision highp float;
 
@@ -168,7 +169,8 @@ float Bayer2(vec2 a) {
 #define Bayer4(a) (Bayer2(.5*(a))*0.25 + Bayer2(a))
 #define Bayer8(a) (Bayer4(.5*(a))*0.25 + Bayer2(a))
 
-#define FBM_OCTAVES     5
+// OPTIMIZED: Reduced from 5 to 2 octaves
+#define FBM_OCTAVES     2
 #define FBM_LACUNARITY  1.25
 #define FBM_GAIN        1.0
 
@@ -331,6 +333,10 @@ const PixelBlast = ({
 
   const threeRef = useRef(null);
   const prevConfigRef = useRef(null);
+  
+  // OPTIMIZATION: Store event handlers in ref to properly remove them
+  const handlersRef = useRef({ onPointerDown: null, onPointerMove: null });
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -347,15 +353,34 @@ const PixelBlast = ({
         }
     }
     if (mustReinit) {
+      // FIXED: Proper cleanup before reinit
       if (threeRef.current) {
         const t = threeRef.current;
-        t.resizeObserver?.disconnect();
         cancelAnimationFrame(t.raf);
+        
+        // Remove event listeners
+        if (handlersRef.current.onPointerDown) {
+          t.renderer.domElement.removeEventListener('pointerdown', handlersRef.current.onPointerDown);
+        }
+        if (handlersRef.current.onPointerMove) {
+          t.renderer.domElement.removeEventListener('pointermove', handlersRef.current.onPointerMove);
+        }
+        
+        t.resizeObserver?.disconnect();
         t.quad?.geometry.dispose();
         t.material.dispose();
         t.composer?.dispose();
         t.renderer.dispose();
-        if (t.renderer.domElement.parentElement === container) container.removeChild(t.renderer.domElement);
+        
+        // CRITICAL: Force WebGL context loss to free GPU memory
+        const gl = t.renderer.getContext();
+        if (gl && gl.getExtension('WEBGL_lose_context')) {
+          gl.getExtension('WEBGL_lose_context').loseContext();
+        }
+        
+        if (t.renderer.domElement.parentElement === container) {
+          container.removeChild(t.renderer.domElement);
+        }
         threeRef.current = null;
       }
       const canvas = document.createElement('canvas');
@@ -367,7 +392,10 @@ const PixelBlast = ({
       });
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      
+      // OPTIMIZED: Limit pixel ratio to 1.5 instead of 2 (better performance on high-DPI screens)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      
       container.appendChild(renderer.domElement);
       if (transparent) renderer.setClearAlpha(0);
       else renderer.setClearColor(0x000000, 1);
@@ -489,14 +517,32 @@ const PixelBlast = ({
         const { fx, fy, w, h } = mapToPixels(e);
         touch.addTouch({ x: fx / w, y: fy / h });
       };
+      
+      // Store handlers in ref for cleanup
+      handlersRef.current.onPointerDown = onPointerDown;
+      handlersRef.current.onPointerMove = onPointerMove;
+      
       renderer.domElement.addEventListener('pointerdown', onPointerDown, {
         passive: true
       });
       renderer.domElement.addEventListener('pointermove', onPointerMove, {
         passive: true
       });
+      
+      // OPTIMIZATION: FPS throttling to 30 FPS instead of 60
+      let lastFrameTime = 0;
+      const targetFPS = 30;
+      const frameInterval = 1000 / targetFPS;
+      
       let raf = 0;
-      const animate = () => {
+      const animate = (currentTime) => {
+        // FPS throttling
+        if (currentTime - lastFrameTime < frameInterval) {
+          raf = requestAnimationFrame(animate);
+          return;
+        }
+        lastFrameTime = currentTime;
+        
         if (autoPauseOffscreen && !visibilityRef.current.visible) {
           raf = requestAnimationFrame(animate);
           return;
@@ -558,17 +604,44 @@ const PixelBlast = ({
       if (t.touch) t.touch.radiusScale = liquidRadius;
     }
     prevConfigRef.current = cfg;
+    
+    // FIXED: Proper cleanup function
     return () => {
-      if (threeRef.current && mustReinit) return;
       if (!threeRef.current) return;
+      
       const t = threeRef.current;
-      t.resizeObserver?.disconnect();
+      
+      // Stop animation FIRST
       cancelAnimationFrame(t.raf);
+      
+      // Remove event listeners
+      if (handlersRef.current.onPointerDown) {
+        t.renderer.domElement.removeEventListener('pointerdown', handlersRef.current.onPointerDown);
+      }
+      if (handlersRef.current.onPointerMove) {
+        t.renderer.domElement.removeEventListener('pointermove', handlersRef.current.onPointerMove);
+      }
+      
+      // Disconnect observers
+      t.resizeObserver?.disconnect();
+      
+      // Dispose Three.js resources in correct order
       t.quad?.geometry.dispose();
       t.material.dispose();
       t.composer?.dispose();
       t.renderer.dispose();
-      if (t.renderer.domElement.parentElement === container) container.removeChild(t.renderer.domElement);
+      
+      // CRITICAL: Force WebGL context loss to free GPU memory
+      const gl = t.renderer.getContext();
+      if (gl && gl.getExtension('WEBGL_lose_context')) {
+        gl.getExtension('WEBGL_lose_context').loseContext();
+      }
+      
+      // Remove DOM element
+      if (t.renderer.domElement.parentElement === container) {
+        container.removeChild(t.renderer.domElement);
+      }
+      
       threeRef.current = null;
     };
   }, [

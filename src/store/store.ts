@@ -2,8 +2,13 @@ import { create } from 'zustand';
 
 export type View = 'PRE_SIM' | 'CHAT' | 'MODAL' | 'CHECKOUT' | 'DOCS' | 'SUCCESS';
 export type LanceType = 'nada' | 'dinheiro' | 'fgts' | 'carro' | 'imovel';
-export type urgency = 'imediata' | 'media' | 'longa' | 'investidor';
-export type usage = 'morar' | 'investir' | 'construir' | 'pessoal' | 'trabalho' | 'troca';
+export type Urgency = 'imediata' | 'media' | 'longa' | 'investidor';
+export type Usage = 'morar' | 'investir' | 'construir' | 'pessoal' | 'trabalho' | 'troca';
+
+// Strategic Question Types
+export type AceleracaoStrategy = 'entrada' | 'parcela';
+export type ParcelaPreference = 'menor' | 'normal' | 'maior';
+export type FundoReservaPreference = 'entrada_maior' | 'entrada_menor';
 
 export interface ChatMessage {
   id: string;
@@ -15,13 +20,23 @@ export interface ChatMessage {
 
 export interface UserData {
   goal: string;
-  usage: usage | '';
-  urgency: urgency | '';
+  usage: Usage | '';
+  urgency: Urgency | '';
   inputType: 'credit' | 'installment';
   value: number; // base value (credit)
+  isBudgetBased: boolean; // Flag for budget-based simulations
+
+  // Strategic Questions (Steps 3-5)
+  aceleracao_strategy?: AceleracaoStrategy;
+  parcela_preference?: ParcelaPreference;
+  fundo_reserva_preference?: FundoReservaPreference;
+
+  // Lance (Step 6-7)
   has_lance: boolean;
   lance_type: LanceType;
   lance_value: number;
+
+  // Contact Info (Steps 9-11)
   priority: string;
   name: string;
   whatsapp: string;
@@ -82,8 +97,13 @@ export const useChatStore = create<ChatState>((set) => ({
     goal: '',
     usage: '',
     urgency: '',
-    inputType: 'credit', // default
+    inputType: 'credit',
     value: 0,
+    isBudgetBased: false,
+    // Strategic fields initialized as undefined
+    aceleracao_strategy: undefined,
+    parcela_preference: undefined,
+    fundo_reserva_preference: undefined,
     has_lance: false,
     lance_type: 'nada',
     lance_value: 0,
@@ -121,6 +141,10 @@ export const useChatStore = create<ChatState>((set) => ({
       urgency: '',
       inputType: 'credit',
       value: 0,
+      isBudgetBased: false,
+      aceleracao_strategy: undefined,
+      parcela_preference: undefined,
+      fundo_reserva_preference: undefined,
       has_lance: false,
       lance_type: 'nada',
       lance_value: 0,

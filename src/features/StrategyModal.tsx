@@ -115,8 +115,8 @@ export default function StrategyModal() {
                                 key={r.id}
                                 onClick={() => handleRouteSelect(r)}
                                 className={`flex flex-col items-center justify-center text-center gap-1 px-1 py-3 rounded-xl border text-[11px] uppercase tracking-wide font-bold transition-all ${activeRoute?.id === r.id
-                                        ? 'bg-[#132116] text-white border-[#132116] ring-1 ring-[#132116]'
-                                        : 'bg-white text-gray-400 border-gray-100 hover:bg-gray-50'
+                                    ? 'bg-[#132116] text-white border-[#132116] ring-1 ring-[#132116]'
+                                    : 'bg-white text-gray-400 border-gray-100 hover:bg-gray-50'
                                     }`}
                             >
                                 <span className="text-base">{r.icon}</span>
@@ -135,24 +135,31 @@ export default function StrategyModal() {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="border-t border-gray-200 mb-6"></div>
+
                     {/* Mixer UI */}
                     <div className="mb-6">
-                        {/* Header Block: Title + Probability Strip */}
-                        <div className="flex flex-col items-start mb-6">
-                            <h3 className="font-bold flex items-center gap-2 text-[#132116] mb-2">
-                                <SlidersHorizontal size={18} className="opacity-40" /> Mixer de Lance
+                        {/* Header */}
+                        <div className="text-center mb-4">
+                            <h3 className="font-bold flex items-center justify-center gap-2 text-[#132116] text-lg">
+                                <SlidersHorizontal size={22} className="opacity-40" /> Mixer de Lance
                             </h3>
+                        </div>
 
-                            {/* Probability Status Strip - Mobile Optimized */}
-                            <div className="flex items-center gap-3 w-full">
-                                <span className="text-[10px] font-bold opacity-40 uppercase whitespace-nowrap">Probabilidade:</span>
-                                <div className="h-1.5 flex-1 bg-gray-200 rounded-full overflow-hidden max-w-[100px]">
-                                    <div
-                                        className={`h-full transition-all duration-500 ${mix.prob === 'Alta' ? 'bg-emerald-500' : mix.prob === 'Média' ? 'bg-yellow-400' : 'bg-red-500'}`}
-                                        style={{ width: mix.prob === 'Alta' ? '100%' : mix.prob === 'Média' ? '60%' : '30%' }}
-                                    ></div>
+                        {/* Probability Card - Highlighted */}
+                        <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm">
+                            <div className="flex flex-col items-center gap-3">
+                                <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">Probabilidade de Contemplação</span>
+                                <div className="flex items-center gap-3 w-full justify-center">
+                                    <div className="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden max-w-[200px]">
+                                        <div
+                                            className={`h-full transition-all duration-500 ${mix.prob === 'Alta' ? 'bg-emerald-500' : mix.prob === 'Média' ? 'bg-yellow-400' : 'bg-red-500'}`}
+                                            style={{ width: mix.prob === 'Alta' ? '100%' : mix.prob === 'Média' ? '60%' : '30%' }}
+                                        ></div>
+                                    </div>
+                                    <span className="text-sm font-bold text-[#132116] min-w-[50px]">{mix.prob}</span>
                                 </div>
-                                <span className="text-xs font-bold opacity-60 text-[#132116]">{mix.prob}</span>
                             </div>
                         </div>
 
@@ -168,7 +175,7 @@ export default function StrategyModal() {
                                         </div>
                                     </div>
                                 </label>
-                                <span className="font-bold px-2 py-0.5 rounded-md bg-[#E3FFEE] text-[#2D4A3A] text-lg">
+                                <span className={`font-bold px-2 py-0.5 rounded-md text-[#2D4A3A] text-lg transition-all duration-300 ${lanceLivre === 0 ? 'bg-[#E3FFEE] label-pulse' : 'bg-[#E3FFEE]'}`}>
                                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lanceLivre)}
                                 </span>
                             </div>
@@ -179,7 +186,7 @@ export default function StrategyModal() {
                                 step={1000}
                                 value={lanceLivre}
                                 onChange={(e) => setLanceLivre(Number(e.target.value))}
-                                className="w-full range-slider cursor-pointer"
+                                className={`w-full range-slider cursor-pointer ${lanceLivre === 0 ? 'slider-hint' : ''}`}
                                 style={{
                                     background: `linear-gradient(to right, #94F6AD 0%, #94F6AD ${(lanceLivre / (baseValue * 0.5)) * 100}%, #e5e5e5 ${(lanceLivre / (baseValue * 0.5)) * 100}%, #e5e5e5 100%)`
                                 }}
@@ -193,11 +200,11 @@ export default function StrategyModal() {
                                     <div className="group relative">
                                         <Info size={14} className="text-gray-400 cursor-help" />
                                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
-                                            Usa parte do próprio crédito da carta para dar o lance, sem tirar dinheiro do bolso.
+                                            Usa parte do próprio crédito da carta para dar el lance, sem tirar dinheiro do bolso.
                                         </div>
                                     </div>
                                 </label>
-                                <span className="font-bold px-2 py-0.5 rounded-md bg-[#CEFA83] text-[#2D4A3A] text-lg">
+                                <span className={`font-bold px-2 py-0.5 rounded-md text-[#2D4A3A] text-lg transition-all duration-300 ${lanceEmbutidoPct === 0 ? 'bg-[#CEFA83] label-pulse' : 'bg-[#CEFA83]'}`}>
                                     {lanceEmbutidoPct}%
                                 </span>
                             </div>
@@ -208,7 +215,7 @@ export default function StrategyModal() {
                                 step="5"
                                 value={lanceEmbutidoPct}
                                 onChange={(e) => setLanceEmbutidoPct(Number(e.target.value))}
-                                className="w-full range-slider cursor-pointer"
+                                className={`w-full range-slider cursor-pointer ${lanceEmbutidoPct === 0 ? 'slider-hint' : ''}`}
                                 style={{
                                     background: `linear-gradient(to right, #CEFA83 0%, #CEFA83 ${(lanceEmbutidoPct / 25) * 100}%, #e5e5e5 ${(lanceEmbutidoPct / 25) * 100}%, #e5e5e5 100%)`
                                 }}
@@ -252,18 +259,18 @@ export default function StrategyModal() {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-gray-50 border-t border-gray-100 shrink-0 flex items-center gap-4">
+                <div className="p-6 bg-gray-50 border-t border-gray-100 shrink-0 flex items-center gap-4 rounded-t-[32px]">
                     <button
                         onClick={() => setModalOpen(false)}
-                        className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition px-4 py-3"
+                        className="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition"
                     >
                         Cancelar
                     </button>
                     <button
                         onClick={handleConfirm}
-                        className="flex-1 btn-mint font-display font-bold py-4 rounded-full shadow-xl hover:scale-[1.01] transition active:scale-95 flex items-center justify-center gap-3"
+                        className="flex-1 btn-mint font-display font-bold py-4 rounded-full shadow-xl hover:scale-[1.01] transition active:scale-95 flex items-center justify-center gap-3 text-base"
                     >
-                        Confirmar Estratégia <Check size={20} />
+                        Confirmar <Check size={20} />
                     </button>
                 </div>
             </div>

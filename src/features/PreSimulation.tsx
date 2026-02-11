@@ -61,7 +61,8 @@ export default function PreSimulation() {
         updateUserData({
             goal: selectedAsset,
             inputType, // Persist which one it was
-            value: cleanValue
+            value: cleanValue,
+            isBudgetBased // Pass the budget-based flag to store
         });
 
         // Start transition

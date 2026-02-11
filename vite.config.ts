@@ -12,5 +12,20 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separar vendor chunks para mejor caching
+          'react-vendor': ['react', 'react-dom'],
+          'three-vendor': ['three', 'postprocessing'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'utils': ['zustand', 'clsx', 'tailwind-merge'],
+        }
+      }
+    },
+    // Aumentar límite de warning (temporal hasta optimizar más)
+    chunkSizeWarningLimit: 600,
   }
 })
