@@ -1,0 +1,781 @@
+import { useChatStore } from '../store/store';
+import { triggerCelebration } from '../utils/confetti';
+
+/**
+ * Chat Service - Manages the conversational flow for Alfredo Consórcios
+ * 
+ * Flow Overview (16 Steps):
+ * 0. Confirm Value
+ * 1. Usage/Goal
+ * 2. Urgency
+ * 3-5. Strategic Questions (NEW)
+ * 6. Lance
+ * 7. Lance Value
+ * 8. Show Strategies
+ * 9. Name
+ * 10. WhatsApp
+ * 11. CPF
+ * 12. Checkout Confirmation
+ * 13. Pix Payment
+ * 14. Docs Upload
+ * 15. Checkin Form
+ * 16. Success
+ */
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+type StepAction = 'next' | 'wait' | 'jump';
+
+interface Step {
+    id: number;
+    ask: () => Promise<void>;
+    process: (value: string) => Promise<{ action: StepAction; target?: number }>;
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Validates Brazilian phone number format
+ * @param phone - Phone string (can include formatting)
+ * @returns true if valid (10-11 digits)
+ */
+const isValidPhone = (phone: string): boolean => {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length >= 10 && cleaned.length <= 11;
+};
+
+/**
+ * Validates Brazilian CPF using official algorithm
+ * @param cpf - CPF string (can include formatting)
+ * @returns true if valid CPF
+ */
+const isValidCPF = (cpf: string): boolean => {
+    const cleaned = cpf.replace(/[^\d]+/g, '');
+    if (cleaned === '' || cleaned.length !== 11 || /^(\d)\1+$/.test(cleaned)) return false;
+
+    let add = 0;
+    for (let i = 0; i < 9; i++) add += parseInt(cleaned.charAt(i)) * (10 - i);
+    let rev = 11 - (add % 11);
+    if (rev === 10 || rev === 11) rev = 0;
+    if (rev !== parseInt(cleaned.charAt(9))) return false;
+
+    add = 0;
+    for (let i = 0; i < 10; i++) add += parseInt(cleaned.charAt(i)) * (11 - i);
+    rev = 11 - (add % 11);
+    if (rev === 10 || rev === 11) rev = 0;
+    if (rev !== parseInt(cleaned.charAt(10))) return false;
+
+    return true;
+};
+
+/**
+ * Mock AI analysis function (replace with real Gemini API call)
+ */
+const mockAiAnalysis = async (profile: any): Promise<string> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(`⚡ <b>Análise:</b> Para ${profile.goal} com urgência ${profile.urgency}, o mercado está favorável para lances intermediários.`);
+        }, 1500);
+    });
+};
+
+// ============================================================================
+// CHAT SERVICE
+// ============================================================================
+
+export const chatService = {
+    /**
+     * Initialize chat flow with welcome message
+     */
+    init: async () => {
+        const { addMessage, userData } = useChatStore.getState();
+
+        // Format value for display
+        const valFormatted = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(userData.value);
+
+        // Contextual message for budget-based simulations
+        if (userData.isBudgetBased) {
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: `Entendi. Com orçamento de <b>${valFormatted}</b>, vou focar em <b>Longevidade</b> para maximizar seu crédito.`,
+                sender: 'bot'
+            });
+        } else {
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: `Recebi sua solicitação de <b>${valFormatted}</b> para <b>${userData.goal}</b>.`,
+                sender: 'bot'
+            });
+        }
+
+        await chatService.botTyping();
+        addMessage({
+            type: 'text',
+            content: "O valor está correto? Vou fazer algumas perguntas rápidas para calibrar sua estratégia.",
+            sender: 'bot'
+        });
+
+        // Show confirmation options
+        useChatStore.setState({
+            inputType: 'options',
+            quickReplies: [
+                { label: "✅ Sim, Bora lá", value: "sim" },
+                { label: "✏️ Corrigir Valor", value: "corrigir" }
+            ]
+        } as any);
+    },
+
+    /**
+     * Simulate bot typing indicator
+     */
+    botTyping: async (ms = 1200): Promise<void> => {
+        const { setTyping } = useChatStore.getState();
+        setTyping(true);
+        return new Promise(resolve => setTimeout(() => {
+            setTyping(false);
+            resolve();
+        }, ms));
+    },
+
+    /**
+     * Process user input and advance through steps
+     */
+    processInput: async (value: string, label?: string) => {
+        const state = useChatStore.getState();
+        const { stepIndex, addMessage, setStepIndex } = state;
+
+        // 1. Add User Message
+        addMessage({ type: 'text', content: label || value, sender: 'user' });
+
+        // 2. Clear Inputs
+        useChatStore.setState({ inputType: 'hidden', quickReplies: [] } as any);
+
+        // 3. Process Current Step
+        const currentStep = steps[stepIndex];
+        if (currentStep) {
+            const result = await currentStep.process(value);
+
+            if (result.action === 'next') {
+                const nextIdx = stepIndex + 1;
+                setStepIndex(nextIdx);
+                if (steps[nextIdx]) {
+                    await steps[nextIdx].ask();
+                }
+            } else if (result.action === 'jump') {
+                const nextIdx = result.target!;
+                setStepIndex(nextIdx);
+                if (steps[nextIdx]) await steps[nextIdx].ask();
+            }
+            // 'wait' does nothing, stays on same step
+        }
+    }
+};
+
+// ============================================================================
+// FLOW STEPS
+// ============================================================================
+
+const steps: Step[] = [
+    // ------------------------------------------------------------------------
+    // STEP 0: Confirm Value
+    // ------------------------------------------------------------------------
+    {
+        id: 0,
+        ask: async () => { }, // Handled in init
+        process: async (v) => {
+            const { addMessage, updateUserData } = useChatStore.getState();
+            const lowerV = v.toLowerCase();
+
+            // User wants to correct value
+            if (lowerV.includes('corrigir') || lowerV.includes('nao') || lowerV.includes('não')) {
+                await chatService.botTyping();
+                addMessage({ type: 'text', content: "Sem problemas. Qual o valor correto?", sender: 'bot' });
+                useChatStore.setState({ inputType: 'currency' } as any);
+                return { action: 'wait' };
+            }
+
+            // User confirms value
+            if (lowerV.includes('sim') || lowerV.includes('bora') || lowerV.includes('ok')) {
+                return { action: 'next' };
+            }
+
+            // Assume it's a corrected value input
+            const cleanStr = v.replace(/[^\d,]/g, '').replace(',', '.');
+            const numVal = parseFloat(cleanStr);
+
+            if (!isNaN(numVal) && numVal > 0) {
+                updateUserData({ value: numVal });
+                return { action: 'next' };
+            }
+
+            // Invalid input
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Não entendi o valor. Pode digitar novamente? (Ex: 300.000)", sender: 'bot' });
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 1: Usage/Goal
+    // ------------------------------------------------------------------------
+    {
+        id: 1,
+        ask: async () => {
+            const { userData, addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+
+            if (userData.goal === 'imovel') {
+                addMessage({ type: 'text', content: "Qual o objetivo principal?", sender: 'bot' });
+                useChatStore.setState({
+                    inputType: 'options',
+                    quickReplies: [
+                        { label: "🏠 Morar", value: "morar" },
+                        { label: "💸 Investir", value: "investir" },
+                        { label: "🏗️ Construir", value: "construir" }
+                    ]
+                } as any);
+            } else {
+                addMessage({ type: 'text', content: "Qual será o uso?", sender: 'bot' });
+                useChatStore.setState({
+                    inputType: 'options',
+                    quickReplies: [
+                        { label: "🚗 Pessoal", value: "pessoal" },
+                        { label: "💼 Trabalho", value: "trabalho" },
+                        { label: "🔄 Troca", value: "troca" }
+                    ]
+                } as any);
+            }
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ usage: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 2: Urgency
+    // ------------------------------------------------------------------------
+    {
+        id: 2,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Sobre pressa, qual sua realidade?", sender: 'bot' });
+            useChatStore.setState({
+                inputType: 'options',
+                quickReplies: [
+                    { label: "⚡ Para Ontem", value: "imediata" },
+                    { label: "🔥 3-6 Meses", value: "media" },
+                    { label: "📅 Planejado", value: "longa" },
+                    { label: "💰 Investimento", value: "investidor" }
+                ]
+            } as any);
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ urgency: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ========================================================================
+    // NEW STRATEGIC QUESTIONS (Steps 3-5)
+    // ========================================================================
+
+    // ------------------------------------------------------------------------
+    // STEP 3: Estrategia de Aceleração
+    // ------------------------------------------------------------------------
+    {
+        id: 3,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Para aumentar suas chances de contemplação, você prefere:",
+                sender: 'bot'
+            });
+            useChatStore.setState({
+                inputType: 'options',
+                quickReplies: [
+                    { label: "💰 Dar Entrada Maior", value: "entrada" },
+                    { label: "📅 Pagar Parcelas Normais", value: "parcela" }
+                ]
+            } as any);
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ aceleracao_strategy: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 4: Preferência de Parcelas
+    // ------------------------------------------------------------------------
+    {
+        id: 4,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Enquanto aguarda a contemplação, como prefere pagar as parcelas?",
+                sender: 'bot'
+            });
+            useChatStore.setState({
+                inputType: 'options',
+                quickReplies: [
+                    { label: "📉 Menor Possível", value: "menor" },
+                    { label: "⚖️ Valor Normal", value: "normal" },
+                    { label: "📈 Maior (Acelera Contemplação)", value: "maior" }
+                ]
+            } as any);
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ parcela_preference: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 5: Fundo de Reserva
+    // ------------------------------------------------------------------------
+    {
+        id: 5,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Nos primeiros 2 meses há o fundo de reserva. Você prefere:",
+                sender: 'bot'
+            });
+            useChatStore.setState({
+                inputType: 'options',
+                quickReplies: [
+                    { label: "💵 Entrada Maior + Parcelas Menores", value: "entrada_maior" },
+                    { label: "💳 Entrada Menor + Parcelas Normais", value: "entrada_menor" }
+                ]
+            } as any);
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ fundo_reserva_preference: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 6: Lance (with "Como funciona?" option)
+    // ------------------------------------------------------------------------
+    {
+        id: 6,
+        ask: async () => {
+            const { addMessage, userData } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Sobre <b>Aceleração</b>. Você tem algum valor ou bem para dar de lance?",
+                sender: 'bot'
+            });
+
+            const opts = [
+                { label: "❌ Não tenho lance", value: "nada" },
+                { label: "💰 Dinheiro (Recurso Próprio)", value: "dinheiro" }
+            ];
+
+            // Conditional options based on goal
+            if (userData.goal === 'imovel') {
+                opts.push({ label: "🏦 FGTS", value: "fgts" });
+            }
+            opts.push({ label: "🚗 Veículo", value: "carro" });
+
+            // Add Imóvel option for auto/moto
+            if (userData.goal !== 'imovel') {
+                opts.push({ label: "🏠 Imóvel", value: "imovel" });
+            }
+
+            // Educational option
+            opts.push({ label: "🤔 Como funciona?", value: "explicar" });
+
+            useChatStore.setState({ inputType: 'options', quickReplies: opts } as any);
+        },
+        process: async (v) => {
+            const { addMessage, userData, updateUserData } = useChatStore.getState();
+
+            // Educational flow
+            if (v === 'explicar') {
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "<b>Lance:</b> É a chance de antecipar seu crédito ofertando um valor. Quem oferta mais, leva antes.",
+                    sender: 'bot'
+                });
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "Você pretende ofertar algo?",
+                    sender: 'bot'
+                });
+
+                // Re-show options WITHOUT "Como funciona?"
+                const opts = [
+                    { label: "❌ Não vou ofertar", value: "nada" },
+                    { label: "💰 Sim, Dinheiro", value: "dinheiro" }
+                ];
+                if (userData.goal === 'imovel') opts.push({ label: "🏦 Sim, FGTS", value: "fgts" });
+                opts.push({ label: "🚗 Sim, Veículo", value: "carro" });
+                if (userData.goal !== 'imovel') opts.push({ label: "🏠 Sim, Imóvel", value: "imovel" });
+
+                useChatStore.setState({ inputType: 'options', quickReplies: opts } as any);
+                return { action: 'wait' };
+            }
+
+            // No lance - skip to strategies
+            if (v === 'nada') {
+                updateUserData({ has_lance: false, lance_type: 'nada' });
+                return { action: 'jump', target: 8 }; // Skip lance value step
+            }
+
+            // Has lance - proceed to value input
+            updateUserData({ has_lance: true, lance_type: v as any });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 7: Lance Value
+    // ------------------------------------------------------------------------
+    {
+        id: 7,
+        ask: async () => {
+            const { addMessage, userData } = useChatStore.getState();
+            await chatService.botTyping();
+
+            let msg = "Qual o valor disponível?";
+            if (userData.lance_type === 'dinheiro') msg = "Qual valor você tem disponível em dinheiro?";
+            if (userData.lance_type === 'fgts') msg = "Qual o saldo aproximado do seu FGTS?";
+            if (userData.lance_type === 'carro') msg = "Qual o valor de mercado do veículo?";
+            if (userData.lance_type === 'imovel') msg = "Qual o valor de mercado do imóvel?";
+
+            addMessage({ type: 'text', content: msg, sender: 'bot' });
+            useChatStore.setState({ inputType: 'currency' } as any);
+        },
+        process: async (v) => {
+            const val = parseFloat(v.replace(/\D/g, '')) / 100;
+            useChatStore.getState().updateUserData({ lance_value: val });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 8: Show Strategies
+    // ------------------------------------------------------------------------
+    {
+        id: 8,
+        ask: async () => {
+            const { addMessage, userData, setModalOpen } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: `✨ <i>Analisando grupos ativos para o perfil <b>${userData.goal}</b>...</i>`,
+                sender: 'bot'
+            });
+
+            await chatService.botTyping(1500);
+            const aiMsg = await mockAiAnalysis(userData);
+            addMessage({ type: 'text', content: aiMsg, sender: 'bot' });
+
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Encontrei estas 3 rotas vencedoras:", sender: 'bot' });
+
+            // Show Strategy Cards
+            addMessage({ type: 'card', content: 'strategies', sender: 'bot' });
+
+            // Auto-open modal
+            setTimeout(() => setModalOpen(true), 800);
+
+            useChatStore.setState({ inputType: 'hidden' } as any);
+        },
+        process: async (v) => {
+            const { userData, setModalOpen, addMessage } = useChatStore.getState();
+
+            // Only advance if a route was selected
+            if (userData.finalRoute) {
+                return { action: 'next' };
+            }
+
+            // Re-prompt if no selection
+            if (v !== 'internal_action') {
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "Por favor, escolha uma das estratégias acima para continuarmos.",
+                    sender: 'bot'
+                });
+                setModalOpen(true);
+            }
+
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 9: Name
+    // ------------------------------------------------------------------------
+    {
+        id: 9,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+
+            // Show proposal summary
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Aqui está o resumo da estratégia escolhida:", sender: 'bot' });
+            addMessage({ type: 'card', content: 'proposal', sender: 'bot' });
+
+            // Ask for name
+            await chatService.botTyping(1500);
+            addMessage({
+                type: 'text',
+                content: "Ótima escolha! Para formalizar a proposta, qual seu nome completo?",
+                sender: 'bot'
+            });
+            useChatStore.setState({ inputType: 'text' } as any);
+        },
+        process: async (v) => {
+            useChatStore.getState().updateUserData({ name: v });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 10: WhatsApp (with validation)
+    // ------------------------------------------------------------------------
+    {
+        id: 10,
+        ask: async () => {
+            const { addMessage, userData } = useChatStore.getState();
+            await chatService.botTyping();
+            const firstName = userData.name.split(' ')[0];
+            addMessage({
+                type: 'text',
+                content: `Prazer, ${firstName}! Qual seu WhatsApp para eu enviar o PDF da proposta?`,
+                sender: 'bot'
+            });
+            useChatStore.setState({ inputType: 'phone' } as any);
+        },
+        process: async (v) => {
+            const { addMessage } = useChatStore.getState();
+
+            // Validate phone
+            if (!isValidPhone(v)) {
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "⚠️ Telefone inválido. Use o formato (XX) 9XXXX-XXXX.",
+                    sender: 'bot'
+                });
+                useChatStore.setState({ inputType: 'phone' } as any);
+                return { action: 'wait' };
+            }
+
+            useChatStore.getState().updateUserData({ whatsapp: v });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 11: CPF
+    // ------------------------------------------------------------------------
+    {
+        id: 11,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "CPF? (Só para checar sua elegibilidade em ofertas relâmpago).",
+                sender: 'bot'
+            });
+            useChatStore.setState({ inputType: 'cpf' } as any);
+        },
+        process: async (v) => {
+            const clean = v.replace(/\D/g, '');
+            const { addMessage, updateUserData, userData } = useChatStore.getState();
+
+            // Check length
+            if (clean.length !== 11) {
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "⚠️ O CPF precisa ter 11 dígitos.",
+                    sender: 'bot'
+                });
+                useChatStore.setState({ inputType: 'cpf' } as any);
+                return { action: 'wait' };
+            }
+
+            // Validate CPF
+            const tags = userData.tags || [];
+            if (!isValidCPF(clean)) {
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "⚠️ CPF não verificado, mas vamos seguir com a simulação. 🚀",
+                    sender: 'bot'
+                });
+                tags.push('CPF_INVALIDO');
+            }
+
+            updateUserData({ cpf: v, tags });
+            return { action: 'next' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 12: Checkout Confirmation
+    // ------------------------------------------------------------------------
+    {
+        id: 12,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Confirma os valores para gerarmos o contrato?",
+                sender: 'bot'
+            });
+
+            useChatStore.setState({
+                inputType: 'options',
+                quickReplies: [
+                    { label: "🤖 Sistema Automático", value: "pay" },
+                    { label: "👤 Falar com Humano", value: "human" }
+                ]
+            } as any);
+        },
+        process: async (v) => {
+            if (v === 'pay') return { action: 'next' };
+
+            if (v === 'human') {
+                const { addMessage, userData } = useChatStore.getState();
+                await chatService.botTyping();
+                addMessage({
+                    type: 'text',
+                    content: "Entendi! Um de nossos especialistas vai te ajudar pessoalmente. Clique abaixo para chamar no WhatsApp:",
+                    sender: 'bot'
+                });
+
+                const message = `Olá! Me chamo ${userData.name}. Estava na simulação (R$ ${userData.value}) e gostaria de ajuda humana.`;
+                const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+
+                addMessage({
+                    type: 'text',
+                    content: `<a href="${whatsappUrl}" target="_blank" class="underline font-bold text-green-600">👉 Falar no WhatsApp</a>`,
+                    sender: 'bot'
+                });
+
+                return { action: 'wait' };
+            }
+
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 13: Pix Payment
+    // ------------------------------------------------------------------------
+    {
+        id: 13,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Gerando Pix para adesão...", sender: 'bot' });
+            addMessage({ type: 'card', content: 'pix', sender: 'bot' });
+            useChatStore.setState({ inputType: 'hidden' } as any);
+        },
+        process: async (v) => {
+            if (v === 'paguei') {
+                triggerCelebration();
+                return { action: 'next' };
+            }
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 14: Docs Upload
+    // ------------------------------------------------------------------------
+    {
+        id: 14,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Pagamento identificado! 🚀 Parabéns.", sender: 'bot' });
+            await chatService.botTyping();
+            addMessage({ type: 'text', content: "Para oficializar, preciso de uma foto do RG/CNH.", sender: 'bot' });
+            addMessage({ type: 'card', content: 'docs', sender: 'bot' });
+        },
+        process: async (v) => {
+            if (v === 'docs_uploaded') return { action: 'next' };
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 15: Checkin Form
+    // ------------------------------------------------------------------------
+    {
+        id: 15,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            await chatService.botTyping();
+            addMessage({
+                type: 'text',
+                content: "Recebido! Agora, por favor, só confirme seus dados pessoais abaixo para o contrato.",
+                sender: 'bot'
+            });
+            addMessage({ type: 'card', content: 'checkin-form', sender: 'bot' });
+        },
+        process: async (v) => {
+            if (v === 'form_completed') return { action: 'next' };
+            return { action: 'wait' };
+        }
+    },
+
+    // ------------------------------------------------------------------------
+    // STEP 16: Success
+    // ------------------------------------------------------------------------
+    {
+        id: 16,
+        ask: async () => {
+            const { addMessage } = useChatStore.getState();
+            addMessage({ type: 'card', content: 'success', sender: 'bot' });
+        },
+        process: async () => {
+            return { action: 'wait' };
+        }
+    }
+];
+
+// ============================================================================
+// EXTERNAL HELPERS
+// ============================================================================
+
+/**
+ * Advance flow from external components (Modal, Cards)
+ */
+export const advanceFlow = async (value?: string) => {
+    const { stepIndex } = useChatStore.getState();
+    const current = steps[stepIndex];
+    if (current) {
+        await chatService.processInput(value || 'internal_action', value);
+    }
+};

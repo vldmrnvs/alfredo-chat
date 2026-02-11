@@ -73,6 +73,7 @@ export default {
 		},
 		fontFamily: {
 			display: [
+				'Galano Grotesque',
 				'Geist Sans',
 				'sans-serif'
 			],

@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Galano Grotesque';
+  src: url('./assets/fonts/GalanoGrotesqueSemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
